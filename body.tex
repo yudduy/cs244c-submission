@@ -160,7 +160,7 @@ memory tracking, and simulation interface, and overrides only the method that
 maps the current memory state to window increment, window multiple, and
 intersend values. Where the base \texttt{Rat} performs a lookup in the whisker
 tree to obtain these values, \texttt{NeuralRat} runs a forward pass through the
-neural network.
+neural network and samples .
 
 \subsubsection{Network inputs and action selection}
 
@@ -177,13 +177,12 @@ probability distribution via a temperature-scaled softmax:
 \end{equation}
 %
 where $\tau$ is a temperature parameter that controls the entropy of each output
-distribution. At each decision point, an action index is sampled independently
-from each of the three categorical distributions, selecting a specific
-discretized value for the window increment, window multiple, and minimum
-intersend.
+distribution. At each decision point, an action index
+$a^k \sim \text{Categorical}(\pi(a^k_1), \ldots, \pi(a^k_{N_k}))$ is sampled
+independently for each dimension $k$, selecting a specific discretized value for
+the window increment, window multiple, and minimum intersend.
 
-
-
+\subsubsection{bla}
 
 
 \subsection{AlphaCC: LLM-Guided Code Evolution}
