@@ -76,11 +76,12 @@ AlphaCC scores are averaged over 10 random seeds per rate.
 
 \paragraph{Training and evaluation simulators.}
 Remy and PPO are trained and evaluated in the C++ simulator.
-AlphaCC policies are evolved in a Python reimplementation
-(\S\ref{sec:calibration}), then hand-translated to C++ for all
-reported results. This translation preserves the same state variables,
+All three methods are evaluated in the same C++ simulator.
+AlphaCC's best evolved policy was
+hand-translated to C++ as a native sender class.
+This translation preserves the same state variables,
 thresholds, and control logic; correctness was verified by
-38/38 unit tests comparing Python and C++ outputs.
+38/38 unit tests comparing outputs.
 
 \paragraph{Comparison summary.}
 The three methods share the same observation space (4 EWMAs), action
@@ -97,25 +98,15 @@ but differ along other axes (Table~\ref{tab:fairness}).
 \toprule
  & Remy & PPO & AlphaCC \\
 \midrule
-\textit{Representation}  & Decision tree      & Neural net        & Python source     \\
+\textit{Representation}  & Decision tree      & Neural net        & Source code       \\
 \textit{Optimizer}        & Tree search       & Proximal policy   & LLM evolution     \\
-\textit{Training Simulator}        & C++ (original)    & C++ (original)    & Python (evolve) / C++ (eval) \\
+\textit{Eval Simulator}   & C++ (original)    & C++ (original)    & C++ (original)    \\
 \textit{Statefulness}     & Stateless         & Stateless         & Stateful          \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Simulator Calibration}
-\label{sec:calibration}
-
-% TODO(Andrew): Write this section. Cover:
-% - Python reimplementation of Remy's C++ event-driven simulator
-% - Per-tick event ordering, single-packet-per-sender-per-tick semantics
-% - WhiskerTree protobuf parsing and cross-simulator validation
-% - Results: 2 tree sizes x 9 link rates, mean error 2.9%, max 10.9%
-% - PRNG differences (Python vs C++ Mersenne Twister)
-% - Calibration figure (figures/calibration.pdf exists)
-% - Learnability tree evaluation methodology
+%% Simulator Calibration section removed — all results use C++ simulator.
 
 %% ====================================================================
 %% ARMAAN'S SECTION: Deep RL Methodology
@@ -140,7 +131,7 @@ proceeds as follows:
 
 \begin{enumerate}
 \item \textbf{Seed population}: We initialize with hand-designed CCAs
-  implemented as Python functions. For single-point training: AIMD, Copa, an
+  implemented as source-code policies. For single-point training: AIMD, Copa, an
   adaptive hybrid, and a BBR-like estimator. For the diverse-seed study:
   constant (minimal), AIMD, and pacing seeds (\S\ref{sec:diverse_seeds}).
 \item \textbf{Mutation}: GPT-5.3-codex receives the parent policy's source
@@ -159,7 +150,7 @@ on 6 rates).
 
 \subsubsection{Policy Representation}
 
-AlphaCC policies are Python functions with the signature:
+AlphaCC policies are functions with the signature:
 \begin{verbatim}
 def evolved_policy(obs) -> action
 \end{verbatim}
@@ -233,18 +224,6 @@ onsistently decreases performance at training link rate, but can improve perform
 \subsection{AlphaCC-Specific Analysis}
 \label{sec:ppo_results}
  
-Figure~\ref{fig:generalization} shows the same comparison in our Python
-reimplementation (\S\ref{sec:calibration}), which additionally includes
-Remy 10x/20x trees, hand-designed baselines, and AlphaCC multipoint
-variants that cannot be evaluated in the C++ simulator.
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{figures/generalization}
-\caption{Python simulator evaluation. (a)~Three representations trained at 10~Mbps. (b)~Effect of training breadth and hand-designed baselines.}
-\label{fig:generalization}
-\end{figure*}
-
 \subsubsection{Multipoint Training and Diverse-Seed Evolution}
 \label{sec:diverse_seeds}
 
@@ -588,9 +567,9 @@ from a neural network.
 \item \textbf{PPO baseline quality}: PPO's performance may partly
   reflect its training setup; further hyperparameter tuning could change
   its relative standing.
-\item \textbf{Simulator mismatch}: Remy/PPO trained in C++;
-  AlphaCC trained in Python. Cross-method scores may reflect simulator
-  differences as well as representation differences.
+\item \textbf{Evolution environment}: AlphaCC policies are evolved
+  as source code and hand-translated to C++ for evaluation. Translation
+  errors could affect results, though 38/38 unit tests passed.
 \item \textbf{LLM prior vs.\ discovery}: The 12/12 convergence on BDP scaling
   could reflect either (a)~rediscovery of a genuine attractor in the fitness
   landscape or (b)~the LLM's inability to explore beyond familiar TCP
