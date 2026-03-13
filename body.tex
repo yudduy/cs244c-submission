@@ -1,15 +1,16 @@
 \section{Introduction}
 
 Remy~\cite{winstein2013tcp} demonstrated that computer-generated congestion
-control algorithms could outperform decades of human design within their
+control algorithms (CCAs) could outperform decades of human design within their
 training distribution. However, Remy's decision tree CCAs generalize poorly
 to network conditions outside their training range. Despite this being
-identified over a decade ago, no prior work has systematically compared
+identified over a decade ago, we are not aware of prior work that compares
 alternative representations on Remy's generalization graphs---training
 on the same environments, with the same observation and action spaces.
 
-We set out to add new lines to these graphs. Keeping the observation 
-space fixed, we ask: \textbf{how do a neural network and an LLM-guided
+We evaluate two additional policy representations under Remy's
+generalization setup. Keeping the observation space fixed, we ask:
+\textbf{how do a neural network and a large language model (LLM)-guided
 code evolution system compare to Remy's decision trees on
 out-of-distribution generalization?}
 
@@ -75,10 +76,11 @@ AlphaCC scores are averaged over 10 random seeds per rate.
 All three methods are evaluated in the same C++ simulator.
 Remy and PPO train directly in C++. AlphaCC's best evolved
 policy was hand-translated to C++ as a native sender class;
-correctness was verified by 38/38 unit tests.
+translation parity was checked by 38 unit tests covering the implemented logic.
 
 \paragraph{Comparison summary.}
-The three methods share the same observation space (4 EWMAs), action
+The three methods share the same observation space (4 exponentially
+weighted moving averages, or EWMAs), action
 space (window increment, multiplier, intersend), and evaluation protocol,
 but differ along other axes (Table~\ref{tab:fairness}).
 
@@ -120,8 +122,9 @@ proceeds as follows:
 
 \begin{enumerate}
 \item \textbf{Seed population}: We initialize with hand-designed CCAs
-  implemented as source-code policies. For single-point training: AIMD, Copa, an
-  adaptive hybrid, and a BBR-like estimator. For the diverse-seed study:
+  implemented as source-code policies. For single-point training:
+  additive-increase multiplicative-decrease (AIMD), Copa, an
+  adaptive hybrid, and a BBR-like rate estimator. For the diverse-seed study:
   constant (minimal), AIMD, Copa, and pacing seeds (\S\ref{sec:diverse_seeds}).
 \item \textbf{Mutation}: GPT-5.3-codex receives the parent policy's source
   code, its fitness score, and the top-performing policies in the archive.
@@ -215,10 +218,10 @@ per generation, and per-rate feedback in the prompt.
 
 To test whether AlphaCC's key mechanisms emerge reliably or are artifacts
 of lucky initialization, we designed a controlled experiment using four
-seed families that span the space of CCA architectures:
+seed families covering distinct CCA design approaches:
 \begin{itemize}
 \item \textbf{Constant}: minimal seed (increment=1, multiple=1.0,
-  intersend=0). The LLM receives no congestion-control structure.
+  intersend=0). The seed code itself contains no congestion-control logic.
 \item \textbf{AIMD}: additive-increase multiplicative-decrease with
   basic RTT-ratio thresholds. Classical loss-based structure.
 \item \textbf{Copa}: delay-based seed using RTT-ratio thresholds.
@@ -263,9 +266,9 @@ copa\_r2  & copa     & $-$3.53 & $-$2.18 & 1/9 & \checkmark & -- \\
 \end{table}
 
 \paragraph{Key findings.}
-No systematic run beats Remy on the 9-rate mean. The best (pac\_r1,
+No run from the 12-run diverse-seed experiment beats Remy on the 9-rate mean. The best (pac\_r1,
 $-$1.40) approaches but does not surpass Remy ($-$1.35). The pacing family has the best median ($-$1.79, range 1.08), while AIMD
-has the worst median ($-$3.05) though the smallest range (0.90). Copa has the highest variance (range 2.12).
+has the worst median ($-$3.05) though the smallest range (0.90). Copa has the widest range (2.12).
 
 At the highest tested rate (94.9~Mbps), 9/12 runs beat Remy; at 59.8~Mbps,
 7/12 beat Remy. Since all 12 runs share in-flight scaling,
@@ -293,7 +296,7 @@ by seed family; Figure~\ref{fig:multipoint} shows per-rate performance.
 \label{sec:convergence}
 
 All 12 evolved policies, regardless of seed family,
-converged on the same core control structure:
+share recurring BDP-scaling and pacing components:
 
 \begin{enumerate}
 \item \textbf{BDP estimation}: \texttt{bdp = min\_rtt / rec\_ewma},
@@ -329,28 +332,22 @@ presence of five structural elements:
 Coding was performed by one author post hoc; labels were not used
 during evolution.
 
-The four seed families encode different CCA architectures: the
+The four seed families encode different CCA approaches: the
 constant seed provides \emph{no} congestion-control structure,
 AIMD provides loss-based structure, Copa provides delay-based structure,
-and pacing provides rate-based structure. That all four converge on the same
-BDP-scaled pacing mechanism is consistent with the LLM's pre-trained
+and pacing provides rate-based structure. That all four converge on
+BDP-scaled pacing---including the constant seed, which starts with
+zero congestion-control logic---is consistent with the LLM's pre-trained
 knowledge of TCP biasing search toward this design. We cannot
 distinguish whether this reflects a genuine fitness-landscape attractor
 or the LLM's inability to explore beyond familiar TCP templates.
 
-Figure~\ref{fig:mechanism} shows the core code excerpted from three
+Figure~\ref{fig:mechanism} shows core code excerpted from three
 policies evolved from different seed families. Despite different variable
 names, smoothing constants, and threshold values, the structural pattern
 is shared: estimate BDP from \texttt{min\_rtt / rec\_ewma}, scale
 window changes by $\sqrt{\text{BDP}}$, and pace sends at the
 estimated receive rate.
-
-The constant seed provides \emph{zero} congestion-control
-structure (increment=1, multiple=1.0, intersend=0), yet all three
-constant-seed runs produced BDP-scaling. One hypothesis is that the
-LLM's pre-trained familiarity with TCP biases it toward this template;
-we cannot distinguish this from a fitness-landscape attractor
-(\S\ref{sec:convergence}).
 
 \begin{figure}[t]
 \centering
@@ -418,7 +415,7 @@ High (59.8\,Mbps) & \textbf{$-$0.78}{\scriptsize$\pm$0.07} & $-$1.92 & $-$5.70{\
 \label{sec:failures}
 
 The weaker systematic runs (aimd\_r1 at $-$3.41, constant\_r3 at $-$3.33)
-and prior exploratory failures reveal systematic
+and prior exploratory failures suggest recurring
 failure modes:
 
 \begin{enumerate}
@@ -483,18 +480,18 @@ best score per row.}
 \toprule
 Condition & Copa & AIMD & BBR & AlphaCC \\
 \midrule
-50ms, 9.5 Mbps        & $-$0.85 & $-$1.08 & \textbf{$-$0.69} & $-$0.83 \\
-150ms, 9.5 Mbps       & $-$1.03 & $-$1.03 & $-$1.52 & \textbf{$-$0.49} \\
-300ms, 9.5 Mbps       & $-$2.46 & \textbf{$-$1.29} & $-$1.31 & $-$3.35 \\
-50ms, 59.8 Mbps       & $-$0.53 & $-$0.52 & $-$0.98 & \textbf{$-$0.38} \\
-150ms, 59.8 Mbps      & $-$1.34 & $-$1.34 & \textbf{$-$1.17} & $-$4.94 \\
-300ms, 59.8 Mbps      & \textbf{$-$1.46} & $-$1.54 & $-$3.12 & $-$3.15 \\
+50~ms, 9.5~Mbps        & $-$0.85 & $-$1.08 & \textbf{$-$0.69} & $-$0.83 \\
+150~ms, 9.5~Mbps       & $-$1.03 & $-$1.03 & $-$1.52 & \textbf{$-$0.49} \\
+300~ms, 9.5~Mbps      & $-$2.46 & \textbf{$-$1.29} & $-$1.31 & $-$3.35 \\
+50~ms, 59.8~Mbps      & $-$0.53 & $-$0.52 & $-$0.98 & \textbf{$-$0.38} \\
+150~ms, 59.8~Mbps     & $-$1.34 & $-$1.34 & \textbf{$-$1.17} & $-$4.94 \\
+300~ms, 59.8~Mbps     & \textbf{$-$1.46} & $-$1.54 & $-$3.12 & $-$3.15 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 AlphaCC achieves the best score ($-$0.38 at 50ms\,/\,59.8~Mbps) but
-also the worst ($-$4.94 at 150ms\,/\,59.8~Mbps)---a 4.56-unit swing.
+also the worst ($-$4.94 at 150~ms\,/\,59.8~Mbps)---a 4.56-unit swing.
 AIMD's range is 1.02 units across the same conditions.
 
 
@@ -533,12 +530,11 @@ non-TCP-pretrained LLM (\S\ref{sec:convergence}).
 
 \subsection{Interpretability}
 
-A practical advantage of the source-code representation is human-readable output.
-The best evolved policy uses named variables and clear control
-flow, whereas PPO uses opaque weights. AlphaCC's output
-can be inspected and debugged---enabling the mechanism analysis in
-\S\ref{sec:convergence} that would be harder to extract
-from a neural network, which exposes no named variables or explicit control flow.
+The source-code representation exposes named variables and explicit
+control flow, which made the mechanism analysis in
+\S\ref{sec:convergence} possible. Extracting comparable structure
+from PPO's opaque weight matrices would require additional
+interpretability work.
 
 \subsection{Limitations}
 
@@ -595,9 +591,9 @@ control, respectively.
 
 \section{Conclusion}
 
-We placed two new representations on Remy's generalization graphs---a
-neural network (PPO) and an LLM-guided code evolution system
-(AlphaCC)---alongside Remy's decision trees. For the main comparison,
+We compared two additional representations under Remy's training and
+evaluation setup---a neural network (PPO) and an LLM-guided code
+evolution system (AlphaCC)---alongside Remy's decision trees. For the main comparison,
 all three were trained on a single condition
 (15~Mbps, 150~ms RTT, 2~senders) and evaluated across
 1--1000~Mbps. Three findings:
