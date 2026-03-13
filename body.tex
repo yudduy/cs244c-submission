@@ -189,45 +189,75 @@ intersend.
 \subsection{AlphaCC: LLM-Guided Code Evolution}
 \label{sec:alphacc}
 
-Our approach adapts LLM-guided code evolution, inspired by
-AlphaEvolve~\cite{alphaevolve2025}, to congestion control. We utilized the open-source version OpenEvolve (https://github.com/algorithmicsuperintelligence/openevolve) and wire it agais
+We cloned OpenEvolve, an open-source reimplementation of
+AlphaEvolve~\cite{alphaevolve2025}, and pointed it at Remy's
+\texttt{sender-runner} as the evaluation oracle. Each candidate
+is a Python function \texttt{evolved\_policy(memory) -> action}
+that accepts Remy's 4-EWMA observation and returns the same
+action triple. Unlike Remy's stateless tree lookup or PPO's
+feedforward pass, policies can maintain persistent state across
+calls via function attributes (e.g., phase variables, bandwidth
+estimates). The statefulness ablation
+(\S\ref{sec:statefulness_ablation}) addresses this confound.
 
+\subsubsection{Slotting AlphaCC into the Remy codebase}
 
-The evolution loop
-proceeds as follows:
+We implemented \texttt{AlphaCCRat}, a subclass of the existing
+\texttt{Rat} class, that overrides the decision-making method
+with the evolved policy logic. The translation from Python to
+C++ is performed by GPT-5.3-codex with a fixed prompt specifying
+the \texttt{Rat} interface (\texttt{\_memory.field(0..3)} for
+observations, \texttt{apply\_action(inc, mult, intersend)} for
+output). Compilation failure triggers re-translation (up to 3
+retries). This mirrors how \texttt{NeuralRat} slots into the
+same codebase for PPO.
+
+\subsubsection{Evolution loop}
 
 \begin{enumerate}
-\item \textbf{Seed population}: We initialize with hand-designed CCAs
-  implemented as source-code policies. For single-point training:
-  additive-increase multiplicative-decrease (AIMD), Copa, an
-  adaptive hybrid, and a BBR-like rate estimator. For the diverse-seed study:
-  constant (minimal), AIMD, Copa, and pacing seeds (\S\ref{sec:diverse_seeds}).
-\item \textbf{Mutation}: GPT-5.3-codex receives the parent policy's source
-  code, its fitness score, and the top-performing policies in the archive.
-  It generates a mutated policy.
-\item \textbf{Evaluation}: The candidate is compiled, sanity-checked (it must
-  increase the congestion window when no congestion is detected), and evaluated
-  on the training condition.
-\item \textbf{Selection}: Parents are chosen with 50\% exploitation (highest
-  fitness) and 50\% exploration (random archive member).
+\item \textbf{Seed population}: We initialize with 4 hand-written
+  Python policies: AIMD (loss-based), Copa (delay-based), a
+  rate-based pacer, and an adaptive hybrid.
+
+\item \textbf{Mutation}: GPT-5.3-codex receives the parent
+  policy's full source code, its per-rate fitness scores, and the
+  top-3 policies from the archive. The prompt instructs the LLM
+  to return a complete replacement function (not a diff)
+  preserving the \texttt{evolved\_policy(memory)} signature.
+
+\item \textbf{Sanity check}: Before spending simulation budget,
+  each candidate is executed on a synthetic 10-call observation
+  sequence with decreasing \texttt{rtt\_ratio} (simulating no
+  congestion). If the policy never increases the window during
+  these calls, it is rejected as degenerate.
+
+\item \textbf{Evaluation}: Surviving candidates are translated
+  to C++ (\texttt{AlphaCCRat}), compiled into
+  \texttt{sender-runner}, and evaluated on the training condition
+  (15~Mbps, 150~ms RTT, 2 senders, 100s). Fitness is the
+  normalized score $S$ averaged over 10 random seeds.
+
+\item \textbf{Selection}: Parents are chosen 50\% by exploitation
+  (highest fitness in archive) and 50\% by exploration (uniform
+  random). The archive retains all candidates that improve on
+  their parent.
 \end{enumerate}
 
-We run 15 generations with 5 candidates per generation (75 candidates
-for single-point training; for multipoint, each candidate is evaluated
-on 6 rates).
+We run 15 generations with 5 candidates per generation (75 total
+evaluations).
 
-\subsubsection{Policy Representation}
+\subsubsection{Multipoint training}
 
-Each AlphaCC policy maps Remy's 4-EWMA observation to the same
-action triple (window increment, multiplier, intersend). Unlike
-Remy's stateless tree lookup or PPO's feedforward pass, AlphaCC
-policies can maintain persistent state across calls (e.g., phase
-variables, bandwidth estimates). The statefulness ablation
-(\S\ref{sec:statefulness_ablation}) partially addresses this confound.
-For the main comparison (Figure~\ref{fig:cpp_gen}), we
-hand-translated the best evolved policy to C++ as a new sender class
-in Remy's codebase, preserving the same state variables, thresholds,
-and control logic.
+In single-point training, the LLM receives only one fitness
+score---a scalar with no information about where or why the
+policy fails. To test whether denser feedback helps the LLM
+produce more robust policies, we extended the evaluation to 6
+link rates (matching Remy~10$\times$'s training range). Each
+candidate now receives per-rate scores in the mutation prompt,
+giving the LLM a signal about which network conditions cause
+degradation. We pair this with the diverse-seed study
+(\S\ref{sec:diverse_seeds}) to test both richer feedback and
+initialization robustness.
 
 
 %% ====================================================================
