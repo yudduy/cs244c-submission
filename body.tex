@@ -39,13 +39,10 @@ Remy~1x at link rates far from training (Figure~\ref{fig:cpp_gen}).
 \section{Methods}
 \label{sec:methods}
 
-%% ====================================================================
-%% ANDREW'S SECTIONS: Remy Framework + Simulator Calibration
-%% ====================================================================
 \subsection{Simulation Setup and Evaluation}
 
 \paragraph{Simulation setup.}
-We use the same dumbbell network topology as in Remy \cite{winstein2013tcp}, consisting of two senders which randomly start and stop flows. Each flow's duration is sampled from an exponential distribution, and during a flow a sender chooses when and how many packets to send. For each set of CCAs we evaluate, this decision of whether to send a packet at a given time is determined by the congestion window and the minimum time interval between sent packets, and these are directly updated by the action chosen by each policy. To compare the generalization of each CCA learning scheme, we fix all network conditions of the simulator except for the link rate, which we vary in both the learning and evaluation process. These 
+We use the same dumbbell network topology as in Remy \cite{winstein2013tcp}, consisting of two senders which randomly start and stop flows. Each flow's duration is sampled from an exponential distribution, and during a flow a sender chooses when and how many packets to send. For each set of CCAs we evaluate, this decision of whether to send a packet at a given time is determined by the congestion window and the minimum time interval between sent packets, and these are directly updated by the action chosen by each policy. To compare the generalization of each CCA learning scheme, we fix all network conditions of the simulator except for the link rate, which we vary in both the learning and evaluation process.
 
 % TODO(Andrew): Write this section. Cover:
 % - WhiskerTree structure (observation = 4 EWMAs, action = 3-tuple) 
@@ -74,14 +71,11 @@ We evaluate on 99 log-spaced link rates from 0.1--100~packets/ms
 duration 5000~ms, and infinite buffers.
 AlphaCC scores are averaged over 10 random seeds per rate.
 
-\paragraph{Training and evaluation simulators.}
-Remy and PPO are trained and evaluated in the C++ simulator.
+\paragraph{Training and evaluation.}
 All three methods are evaluated in the same C++ simulator.
-AlphaCC's best evolved policy was
-hand-translated to C++ as a native sender class.
-This translation preserves the same state variables,
-thresholds, and control logic; correctness was verified by
-38/38 unit tests comparing outputs.
+Remy and PPO train directly in C++. AlphaCC's best evolved
+policy was hand-translated to C++ as a native sender class;
+correctness was verified by 38/38 unit tests.
 
 \paragraph{Comparison summary.}
 The three methods share the same observation space (4 EWMAs), action
@@ -106,11 +100,6 @@ but differ along other axes (Table~\ref{tab:fairness}).
 \end{tabular}
 \end{table}
 
-%% Simulator Calibration section removed — all results use C++ simulator.
-
-%% ====================================================================
-%% ARMAAN'S SECTION: Deep RL Methodology
-%% ====================================================================
 \subsection{PPO: Deep Reinforcement Learning}
 \label{sec:ppo}
 
@@ -133,7 +122,7 @@ proceeds as follows:
 \item \textbf{Seed population}: We initialize with hand-designed CCAs
   implemented as source-code policies. For single-point training: AIMD, Copa, an
   adaptive hybrid, and a BBR-like estimator. For the diverse-seed study:
-  constant (minimal), AIMD, and pacing seeds (\S\ref{sec:diverse_seeds}).
+  constant (minimal), AIMD, Copa, and pacing seeds (\S\ref{sec:diverse_seeds}).
 \item \textbf{Mutation}: GPT-5.3-codex receives the parent policy's source
   code, its fitness score, and the top-performing policies in the archive.
   It generates a mutated policy.
@@ -164,7 +153,7 @@ transitions and bandwidth estimation.
 Note that AlphaCC policies can maintain arbitrary state across calls via
 function attributes, which is additional representational power not available
 to Remy's stateless tree mapping or PPO's feedforward network. The
-statefulness ablation (\S\ref{sec:ablation}) partially addresses this
+statefulness ablation (\S\ref{sec:statefulness_ablation}) partially addresses this
 confound. For the main comparison (Figure~\ref{fig:cpp_gen}), we
 hand-translated the best evolved policy to C++ as a new sender class
 in Remy's codebase, preserving the same state variables, thresholds,
@@ -215,14 +204,14 @@ observed in~\cite{sivaraman2014experimental}.
 \centering
 \includegraphics[width=\columnwidth]{figures/ppo_trajectory.png}
 \caption{PPO unnormalized utility over the course of training.}
-\label{fig:ppo_temp_sweep}
+\label{fig:ppo_trajectory}
 \end{figure}
 
-onsistently decreases performance at training link rate, but can improve performance on out-of-distribution link rates
+Higher sampling temperature consistently decreases performance at the training link rate, but can improve performance on out-of-distribution link rates.
 
 
 \subsection{AlphaCC-Specific Analysis}
-\label{sec:ppo_results}
+\label{sec:alphacc_results}
  
 \subsubsection{Multipoint Training and Diverse-Seed Evolution}
 \label{sec:diverse_seeds}
@@ -237,7 +226,7 @@ of lucky initialization, we designed a controlled experiment using four
 seed families that span the space of CCA architectures:
 \begin{itemize}
 \item \textbf{Constant}: minimal seed (increment=1, multiple=1.0,
-  intersend=0). The LLM must discover all congestion-control structure.
+  intersend=0). The LLM receives no congestion-control structure.
 \item \textbf{AIMD}: additive-increase multiplicative-decrease with
   basic RTT-ratio thresholds. Classical loss-based structure.
 \item \textbf{Copa}: delay-based seed using RTT-ratio thresholds.
@@ -291,7 +280,7 @@ At the highest tested rate (94.9~Mbps), 9/12 runs beat Remy; at 59.8~Mbps,
 shared in-flight scaling alone does not account for the between-run
 variance at these rates.
 Figure~\ref{fig:seed_comparison} shows the distribution of 9-rate means
-by seed family.
+by seed family; Figure~\ref{fig:multipoint} shows per-rate performance.
 
 \begin{figure}[t]
 \centering
@@ -348,7 +337,7 @@ presence of five structural elements:
 Coding was performed by one author post hoc; labels were not used
 during evolution.
 
-The three seed families encode different CCA architectures: the
+The four seed families encode different CCA architectures: the
 constant seed provides \emph{no} congestion-control structure (the LLM
 must invent everything), AIMD provides loss-based structure, and pacing
 provides rate-based structure. That all three converge on the same
@@ -427,9 +416,9 @@ evolution run.}
 \toprule
 Condition & Stateful & Stateless & Copa \\
 \midrule
-Near (9.5\,Mbps) & \textbf{$-$0.72}{\scriptsize$\pm$.06} & $-$2.54 & $-$3.06{\scriptsize$\pm$.12} \\
-Low (2.4\,Mbps) & $-$1.57{\scriptsize$\pm$.51} & \textbf{$-$0.75} & $-$1.36{\scriptsize$\pm$.10} \\
-High (59.8\,Mbps) & \textbf{$-$0.78}{\scriptsize$\pm$.07} & $-$1.92 & $-$5.70{\scriptsize$\pm$.12} \\
+Near (9.5\,Mbps) & \textbf{$-$0.72}{\scriptsize$\pm$0.06} & $-$2.54 & $-$3.06{\scriptsize$\pm$0.12} \\
+Low (2.4\,Mbps) & $-$1.57{\scriptsize$\pm$0.51} & \textbf{$-$0.75} & $-$1.36{\scriptsize$\pm$0.10} \\
+High (59.8\,Mbps) & \textbf{$-$0.78}{\scriptsize$\pm$0.07} & $-$1.92 & $-$5.70{\scriptsize$\pm$0.12} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -448,14 +437,14 @@ failure modes:
   parameters within that architecture---we did not observe escapes to
   qualitatively different designs.
 \item \textbf{Conservative BDP caps}: One failed run committed to
-  \texttt{min(16, sqrt(bdp))} early. No local mutation can change the scaling
-  law without rewriting the formula. At high BDP ($>$256 packets), the cap
+  \texttt{min(16, sqrt(bdp))} early. At high BDP ($>$256 packets), the cap
   makes the policy 6$\times$ slower to grow than the winning policies.
 \item \textbf{Over-engineering}: Another failed run built a PID-style
   controller with 5+ interacting error terms, suggesting too many
-  coefficients for 30 generations to co-tune.
-\item \textbf{Degenerate mutations}: One exploratory run produced mutations
-  scoring $-$105 (generation 27). We did not observe recovery from
+  coefficients for 15 generations to co-tune.
+\item \textbf{Degenerate mutations}: One earlier exploratory run
+  (30 generations) produced mutations
+  scoring $-$105. We did not observe recovery from
   degenerate regions in any run.
 \end{enumerate}
 
@@ -538,7 +527,7 @@ losing near training where Remy's precise tree fit dominates.
 \textbf{No method dominates everywhere.} Each representation has
 a region where it performs best (Figure~\ref{fig:cpp_gen}).
 
-\textbf{PPO.} PPO underperforms Remy across most of the rate range
+\textbf{PPO.} PPO underperforms Remy~1x across most of the rate range
 in the C++ simulator despite sharing the same observations,
 actions, and training simulator. We did not conduct a thorough
 hyperparameter sweep (6~brains, no architecture search), so we cannot
@@ -618,8 +607,9 @@ control, respectively.
 
 We placed two new representations on Remy's generalization graphs---a
 neural network (PPO) and an LLM-guided code evolution system
-(AlphaCC)---alongside Remy's decision trees, all trained on a single
-condition (15~Mbps, 150~ms RTT, 2~senders) and evaluated across
+(AlphaCC)---alongside Remy's decision trees. For the main comparison,
+all three were trained on a single condition
+(15~Mbps, 150~ms RTT, 2~senders) and evaluated across
 1--1000~Mbps. Three findings:
 
 \begin{enumerate}
