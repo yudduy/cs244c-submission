@@ -204,7 +204,7 @@ estimates). The statefulness ablation
 We implemented \texttt{AlphaCCRat}, a subclass of the existing
 \texttt{Rat} class, that overrides the decision-making method
 with the evolved policy logic. The translation from Python to
-C++ is automated: GPT-5.3-codex receives the Python policy and a
+C++ is automated--GPT-5.3-codex receives the Python policy and a
 fixed prompt describing the \texttt{Rat} class interface, and
 produces a compilable C++ subclass. Compilation failure triggers
 re-translation (up to 3 retries). This mirrors how \texttt{NeuralRat} slots into the
