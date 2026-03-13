@@ -177,7 +177,7 @@ intersend action spaces respectively. Each score vector is independently
 normalized into a probability distribution via a temperature-scaled softmax:
 %
 \begin{equation}
-  \pi(a_k) = \frac{\exp(z_{a_k} / \tau)}{\sum_j \exp(z_j / \tau)},
+  \pi(a^k_i) = \frac{\exp(z^{k}_i / \tau)}{\sum_j \exp(z^{k}_j / \tau)},
   \qquad k \in \{\text{wi},\, \text{wm},\, \text{is}\},
 \end{equation}
 %
@@ -189,11 +189,15 @@ intersend.
 
 
 
+
 \subsection{AlphaCC: LLM-Guided Code Evolution}
 \label{sec:alphacc}
 
 Our approach adapts LLM-guided code evolution, inspired by
-AlphaEvolve~\cite{alphaevolve2025}, to congestion control. We utilized im ireThe evolution loop
+AlphaEvolve~\cite{alphaevolve2025}, to congestion control. We utilized the open-source version OpenEvolve (https://github.com/algorithmicsuperintelligence/openevolve) and wire it agais
+
+
+The evolution loop
 proceeds as follows:
 
 \begin{enumerate}
