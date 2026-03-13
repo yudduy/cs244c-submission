@@ -45,28 +45,25 @@ We compare three representations:
   mutation and evaluated via Remy's C++ simulator.
 \end{enumerate}
 
+All three are evaluated in Remy's C++ simulator across
+1--1000~Mbps (Figure~\ref{fig:cpp_gen}). Remy~1x peaks near its
+training rate (15~Mbps) but degrades sharply at both extremes,
+consistent with~\cite{sivaraman2014experimental}. PPO, trained
+with 6 independent brains and no architecture search, underperforms
+Remy~1x across most of the rate range---we cannot determine whether
+this reflects the neural-network representation or insufficient
+tuning. AlphaCC's best evolved policy, LLM-translated to C++ for
+evaluation, degrades more gradually than Remy~1x at high rates but
+does not surpass it on the aggregate mean.
 
-Across 12~independent AlphaCC evolution runs from 4~seed families,
-every evolved policy converged on the same core mechanism---in-flight
-scaling and rate-based pacing (12/12 runs). No AlphaCC run surpassed
-Remy on the aggregate mean, but AlphaCC degrades more gradually than
-Remy~1x at link rates far from training (Figure~\ref{fig:cpp_gen}).
 
 \section{Related Work}
 
-Remy~\cite{winstein2013tcp} pioneered automated CCA design with decision tree
-optimization. Sivaraman et al.~\cite{sivaraman2014experimental} studied its
-generalization, finding that trees trained on narrow ranges degrade on wider
-conditions while broader training ranges trade peak performance for
-robustness.
+Remy~\cite{winstein2013tcp} pioneered automated CCA design with decision tree optimization. Sivaraman et al.~\cite{sivaraman2014experimental} studied its generalization, finding that trees trained on narrow ranges degrade on wider conditions while broader training ranges trade peak performance for robustness.
 
 Several deep RL approaches followed: PCC~\cite{dong2015pcc} used online
-learning for utility maximization; Aurora~\cite{jay2019deep} applied deep RL
-to congestion control; Yan et al.~\cite{yan2018pantheon} built the Pantheon
-benchmarking platform for systematic CCA comparison.
-These demonstrated that neural networks can learn congestion control but
-did not systematically compare generalization across representations on the
-same environments.
+learning for utility maximization; Aurora~\cite{jay2019deep} applied deep RL to congestion control; Yan et al.~\cite{yan2018pantheon} built the Pantheon benchmarking platform for systematic CCA comparison. These demonstrated that neural networks can learn congestion control but
+did not systematically compare generalization across representations on the same environments.
 
 CCAC~\cite{arun2021ccac} introduced formal CCA verification using
 SMT solvers. CCmatic~\cite{arun2024ccmatic} extended this to automated
@@ -78,9 +75,7 @@ evolution for mathematical optimization. Our approach adapts this
 paradigm to congestion control, using simulation-based fitness instead
 of mathematical verification.
 
-Copa~\cite{arun2018copa} and BBR~\cite{cardwell2017bbr} represent hand-designed
-CCAs that encode domain knowledge about delay-based and model-based congestion
-control, respectively.
+Copa~\cite{arun2018copa} and BBR~\cite{cardwell2017bbr} represent hand-designed CCAs that encode domain knowledge about delay-based and model-based congestioncontrol, respectively.
 
 %% ====================================================================
 %% METHODS
@@ -122,9 +117,7 @@ seeds per rate.
 
 \paragraph{Training and evaluation.}
 All three methods are evaluated in the same C++ simulator.
-Remy and PPO train directly in C++. AlphaCC's best evolved
-policy was hand-translated to C++ as a native sender class;
-translation parity was checked by 38 unit tests covering the implemented logic.
+Remy and PPO train directly in C++. 
 
 \paragraph{Comparison summary.}
 The three methods share the same observation space (4 exponentially
@@ -152,23 +145,55 @@ but differ along other axes (Table~\ref{tab:fairness}).
 
 \subsection{PPO: Deep Reinforcement Learning}
 \label{sec:ppo}
+For our PPO agent, we consider a single neural network that is executed
+locally for each sender that ultimately maps local observations to a decision
+about when to send the next packet. The parameters of this neural network are
+identical for each sender and unchanged throughout a given simulation. The
+neural network accepts the same inputs and uses the same discretized action
+space for each action dimension as the Remy decision tree.
 
-For this class of CCAs, we consider a single neural network that is executed locally for each sender that, at a high level, maps local observations to a decision about when to send the next packet. The parameters of this neural network are identical for each sender and unchanged throughout a given simulation. The neural network takes as input the same thing as the Remy decision tree---specifically, exponential moving averages of the sending and receiving intervals as well as the RTT inflation. Also, identically to the Remy decision tree, the neural network has a discretized action space for each action dimension: the window increment, the window multiple, and the minimum time interval between sent packets (i.e., intersend).
+\subsubsection{Slotting our PPO agent into the Remy codebase}
 
-which takes in a four-dimensional input as previously described, nd which mirrors the Remy decision tree and outputs a 
+We implemented a new \texttt{NeuralRat} class in the original Remy codebase as a
+subclass of the existing \texttt{Rat} class used by the Remy decision tree,
+isolating the decision-making algorithm from the surrounding agent interface and
+simulation infrastructure. This subclass inherits the same packet-sending logic,
+memory tracking, and simulation interface, and overrides only the method that
+maps the current memory state to window increment, window multiple, and
+intersend values. Where the base \texttt{Rat} performs a lookup in the whisker
+tree to obtain these values, \texttt{NeuralRat} runs a forward pass through the
+neural network.
+
+\subsubsection{Network inputs and action selection}
+
+The network takes as input the four-dimensional observation
+$\mathbf{x} = (\text{sewma},\, \text{rewma},\, \text{rtt\_ratio},\, \text{slow\_rewma})$
+and produces three unnormalized score vectors
+$\mathbf{z}^{\text{wi}} \in \mathbb{R}^{257}$,
+$\mathbf{z}^{\text{wm}} \in \mathbb{R}^{101}$, and
+$\mathbf{z}^{\text{is}} \in \mathbb{R}^{56}$,
+one entry per discretized value in the window increment, window multiple, and
+intersend action spaces respectively. Each score vector is independently
+normalized into a probability distribution via a temperature-scaled softmax:
+%
+\begin{equation}
+  \pi(a_k) = \frac{\exp(z_{a_k} / \tau)}{\sum_j \exp(z_j / \tau)},
+  \qquad k \in \{\text{wi},\, \text{wm},\, \text{is}\},
+\end{equation}
+%
+where $\tau$ is a temperature parameter that controls the entropy of each output
+distribution.  At each decision point, an action index is sampled independently
+from each of the three categorical distributions, selecting a specific
+discretized value for the window increment, window multiple, and minimum
+intersend.
 
 
-The network maps the same 4D observations to discretized actions via
-three categorical heads (257/101/56 classes for window\_increment,
-window\_multiple, and intersend respectively).
 
 \subsection{AlphaCC: LLM-Guided Code Evolution}
 \label{sec:alphacc}
 
-\subsubsection{Evolution Architecture}
-
 Our approach adapts LLM-guided code evolution, inspired by
-AlphaEvolve~\cite{alphaevolve2025}, to congestion control. The evolution loop
+AlphaEvolve~\cite{alphaevolve2025}, to congestion control. We utilized im ireThe evolution loop
 proceeds as follows:
 
 \begin{enumerate}
