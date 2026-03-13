@@ -67,10 +67,11 @@ means perfect utilization with zero queuing delay.
 
 \paragraph{Evaluation protocol.}
 All results use Remy's original C++ simulator (\texttt{sender-runner}).
-We evaluate on 99 log-spaced link rates from 0.1--100~packets/ms
-(1--1000~Mbps), with RTT${}={}$150~ms, 2~senders, mean on/off
-duration 5000~ms, and infinite buffers.
-AlphaCC scores are averaged over 10 random seeds per rate.
+Unless otherwise noted, we evaluate on 99 log-spaced link rates from
+0.1--100~packets/ms (1--1000~Mbps), with RTT${}={}$150~ms, 2~senders,
+mean on/off duration 5000~ms, and infinite buffers.
+For the main comparison, AlphaCC scores are averaged over 10 random
+seeds per rate.
 
 \paragraph{Training and evaluation.}
 All three methods are evaluated in the same C++ simulator.
@@ -145,9 +146,8 @@ on 6 rates).
 Each AlphaCC policy maps Remy's 4-EWMA observation to the same
 action triple (window increment, multiplier, intersend). Unlike
 Remy's stateless tree lookup or PPO's feedforward pass, AlphaCC
-policies can maintain persistent state across calls---enabling
-phase transitions, bandwidth estimation, and history-dependent
-decisions. The statefulness ablation
+policies can maintain persistent state across calls (e.g., phase
+variables, bandwidth estimates). The statefulness ablation
 (\S\ref{sec:statefulness_ablation}) partially addresses this confound.
 For the main comparison (Figure~\ref{fig:cpp_gen}), we
 hand-translated the best evolved policy to C++ as a new sender class
@@ -216,9 +216,9 @@ extended it to multipoint training across 6 link rates (matching
 Remy 10$\times$'s training range), with 15 generations, 5 candidates
 per generation, and per-rate feedback in the prompt.
 
-To test whether AlphaCC's key mechanisms emerge reliably or are artifacts
-of lucky initialization, we designed a controlled experiment using four
-seed families covering distinct CCA design approaches:
+To test whether AlphaCC's key mechanisms are robust to initialization,
+we ran 12 independent evolutions from four structurally different seed
+families:
 \begin{itemize}
 \item \textbf{Constant}: minimal seed (increment=1, multiple=1.0,
   intersend=0). The seed code itself contains no congestion-control logic.
@@ -403,9 +403,9 @@ evolution run.}
 \toprule
 Condition & Stateful & Stateless & Copa \\
 \midrule
-Near (9.5\,Mbps) & \textbf{$-$0.72}{\scriptsize$\pm$0.06} & $-$2.54 & $-$3.06{\scriptsize$\pm$0.12} \\
-Low (2.4\,Mbps) & $-$1.57{\scriptsize$\pm$0.51} & \textbf{$-$0.75} & $-$1.36{\scriptsize$\pm$0.10} \\
-High (59.8\,Mbps) & \textbf{$-$0.78}{\scriptsize$\pm$0.07} & $-$1.92 & $-$5.70{\scriptsize$\pm$0.12} \\
+Near (9.5~Mbps) & \textbf{$-$0.72}{\scriptsize$\pm$0.06} & $-$2.54 & $-$3.06{\scriptsize$\pm$0.12} \\
+Low (2.4~Mbps) & $-$1.57{\scriptsize$\pm$0.51} & \textbf{$-$0.75} & $-$1.36{\scriptsize$\pm$0.10} \\
+High (59.8~Mbps) & \textbf{$-$0.78}{\scriptsize$\pm$0.07} & $-$1.92 & $-$5.70{\scriptsize$\pm$0.12} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -489,7 +489,7 @@ Condition & Copa & AIMD & BBR & AlphaCC \\
 \end{tabular}
 \end{table}
 
-AlphaCC achieves the best score ($-$0.38 at 50ms\,/\,59.8~Mbps) but
+AlphaCC achieves the best score ($-$0.38 at 50~ms\,/\,59.8~Mbps) but
 also the worst ($-$4.94 at 150~ms\,/\,59.8~Mbps)---a 4.56-unit swing.
 AIMD's range is 1.02 units across the same conditions.
 
@@ -529,9 +529,9 @@ require a non-TCP-pretrained LLM.
 \subsection{Interpretability}
 
 The source-code representation exposes named variables and explicit
-control flow, which made the mechanism analysis in
-\S\ref{sec:convergence} possible. Extracting comparable structure
-from PPO's opaque weight matrices would require additional
+control flow. The mechanism analysis in
+\S\ref{sec:convergence} relies on this; extracting comparable structure
+from PPO's weight matrices would require separate
 interpretability work.
 
 \subsection{Limitations}
