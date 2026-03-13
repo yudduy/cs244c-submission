@@ -29,7 +29,7 @@ We compare three representations:
 
 
 Across 12~independent AlphaCC evolution runs from 4~seed families,
-every evolved policy converged on the same core mechanism---BDP-proportional
+every evolved policy converged on the same core mechanism---in-flight
 scaling and rate-based pacing (12/12 runs). No AlphaCC run surpassed
 Remy on the aggregate mean, but AlphaCC degrades more gradually than
 Remy~1x at link rates far from training (Figure~\ref{fig:cpp_gen}).
@@ -236,7 +236,7 @@ summarizes the results.
 
 \begin{table}[t]
 \centering
-\caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. Won: rates where run beats Remy~1x out of 9. IFS: in-flight scaling (BDP-proportional window adjustment) present. All 12 use rate-based pacing.}
+\caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. Won: rates where run beats Remy~1x out of 9. IFS: in-flight scaling (window gain proportional to $\sqrt{\mathrm{bdp}}$) present. All 12 use rate-based pacing.}
 \label{tab:diverse_seeds}
 \footnotesize
 \begin{tabular}{@{}llrrccc@{}}
@@ -299,10 +299,10 @@ All 12 evolved policies, regardless of seed family,
 share recurring BDP-scaling and pacing components:
 
 \begin{enumerate}
-\item \textbf{BDP estimation}: \texttt{bdp = min\_rtt / rec\_ewma},
-  inferring the bandwidth-delay product from the ratio of minimum RTT
-  to inter-receive time. Present in 12/12 policies.
-\item \textbf{BDP-proportional scaling}: window increments scale with
+\item \textbf{BDP proxy}: \texttt{bdp = min\_rtt / rec\_ewma},
+  approximating the number of packets in flight at the bottleneck rate
+  (a proxy for the bandwidth-delay product in packets). Present in 12/12 policies.
+\item \textbf{In-flight scaling}: window increments scale with
   $\sqrt{\text{bdp}}$. Present in 12/12 policies.
 \item \textbf{Rate-based pacing}: \texttt{intersend} set from
   receive-rate estimates, not purely window-driven. Present in 12/12
@@ -321,7 +321,7 @@ presence of five structural elements:
 \begin{enumerate}
 \item BDP estimation: computing ratio of minimum RTT
   to smoothed receive rate, or equivalent;
-\item BDP-proportional scaling: gain proportional to
+\item In-flight scaling: gain proportional to
   $\sqrt{\mathrm{bdp}}$ or similar;
 \item Rate-based pacing: \texttt{intersend} set from receive-rate;
 \item Queue pressure: RTT-ratio thresholds gating
@@ -336,11 +336,10 @@ The four seed families encode different CCA approaches: the
 constant seed provides \emph{no} congestion-control structure,
 AIMD provides loss-based structure, Copa provides delay-based structure,
 and pacing provides rate-based structure. That all four converge on
-BDP-scaled pacing---including the constant seed, which starts with
-zero congestion-control logic---is consistent with the LLM's pre-trained
-knowledge of TCP biasing search toward this design. We cannot
-distinguish whether this reflects a genuine fitness-landscape attractor
-or the LLM's inability to explore beyond familiar TCP templates.
+in-flight-scaled pacing---including the constant seed, which starts with
+zero congestion-control logic. We cannot distinguish whether this
+convergence reflects a genuine fitness-landscape attractor or the LLM's
+inability to explore beyond familiar TCP templates.
 
 Figure~\ref{fig:mechanism} shows core code excerpted from three
 policies evolved from different seed families. Despite different variable
@@ -522,11 +521,10 @@ determine whether this reflects a limitation of the
 neural-network representation or insufficient training.
 
 \textbf{Mechanistic convergence.} All 12~AlphaCC runs converge on
-in-flight-scaled pacing regardless of seed family. This is consistent
-with the LLM's pre-trained knowledge of TCP biasing search
-toward familiar designs. We cannot distinguish
-this from a genuine fitness-landscape attractor without a
-non-TCP-pretrained LLM (\S\ref{sec:convergence}).
+in-flight-scaled pacing regardless of seed family
+(\S\ref{sec:convergence}). Distinguishing whether this reflects the
+LLM's TCP prior or a genuine fitness-landscape attractor would
+require a non-TCP-pretrained LLM.
 
 \subsection{Interpretability}
 
@@ -569,7 +567,7 @@ robustness.
 Several deep RL approaches followed: PCC~\cite{dong2015pcc} used online
 learning for utility maximization; Aurora~\cite{jay2019deep} applied deep RL
 to congestion control; Yan et al.~\cite{yan2018pantheon} built the Pantheon
-benchmarking platform and trained Indigo via imitation learning.
+benchmarking platform for systematic CCA comparison.
 These demonstrated that neural networks can learn congestion control but
 did not systematically compare generalization across representations on the
 same environments.
@@ -607,7 +605,7 @@ all three were trained on a single condition
 
 \item \textbf{Mechanistic convergence.} Across 12~independent
   AlphaCC runs from 4~seed families, every evolved policy contains
-  in-flight-proportional scaling and rate-based pacing (12/12).
+  in-flight scaling and rate-based pacing (12/12).
   Whether this reflects the LLM's TCP prior or a fitness-landscape
   attractor remains an open question (\S\ref{sec:convergence}).
 
