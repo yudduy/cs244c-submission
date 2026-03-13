@@ -8,9 +8,8 @@ prior work has placed alternative representations on Remy's
 generalization graphs---training on the same environments, with the
 same observation and action spaces.
 
-We set out to add new lines to these graphs. Keeping the observation space
-(4~EWMA features) and action space (window\_increment, window\_multiple,
-intersend) fixed, we ask: \textbf{how do a neural network and an LLM-guided
+We set out to add new lines to these graphs. Keeping the observation 
+space fixed, we ask: \textbf{how do a neural network and an LLM-guided
 code evolution system compare to Remy's decision trees on
 out-of-distribution generalization?}
 
@@ -27,20 +26,26 @@ We compare three representations:
   mutation with simulation-based fitness.
 \end{enumerate}
 
-The third paradigm was not part of the original plan. We added it after
-observing that PPO does not outperform Remy, and were curious whether an
+
+\iffalse
+Armaan: We need to redo this once we have the updated results in.
+The answer is nuanced:
+were curious whether an
 approach that produces \emph{readable code}---rather than opaque
-weights---would generalize differently. The answer is nuanced:
+weights---would generalize differently. 
 \textbf{Representation matters}, but no method dominates everywhere.
 Remy~1x peaks near training (best at 5/9 rates) while AlphaCC's
 in-flight scaling gives it flatter degradation at high rates (best at
 4/9). PPO generalizes worst, beaten by both at all tested rates.
-Across 12~independent evolution runs from 4~seed families, AlphaCC
+Across 12~independent evolution runs from 4~seed families, 
+\fi
+
+%% Separate the discussion about alphacc interpretation to another paragraph
+AlphaCC
 repeatedly rediscovered the same interpretable
 design---BDP-proportional scaling and rate-based pacing---regardless
 of starting point (12/12 convergence), but no systematic run surpassed
 Remy on the aggregate mean.
-
 
 %% ====================================================================
 %% METHODS
@@ -57,7 +62,7 @@ Remy on the aggregate mean.
 We use the same dumbbell network topology as in Remy \cite{winstein2013tcp}, consisting of two senders which randomly start and stop flows. Each flow's duration is sampled from an exponential distribution, and during a flow a sender chooses when and how many packets to send. For each set of CCAs we evaluate, this decision of whether to send a packet at a given time is determined by the congestion window and the minimum time interval between sent packets, and these are directly updated by the action chosen by each policy. To compare the generalization of each CCA learning scheme, we fix all network conditions of the simulator except for the link rate, which we vary in both the learning and evaluation process. These 
 
 % TODO(Andrew): Write this section. Cover:
-% - WhiskerTree structure (observation = 4 EWMAs, action = 3-tuple)
+% - WhiskerTree structure (observation = 4 EWMAs, action = 3-tuple) 
 % - Observation space: send_ewma, rec_ewma, rtt_ratio, slow_rec_ewma
 % - Action space: window_increment, window_multiple, intersend
 % - Utility function: U = log2(throughput) - delta * log2(delay), delta=1
@@ -73,17 +78,8 @@ S = \log_2\!\left(\frac{\text{throughput}}{\text{capacity}}\right) - \log_2\!\le
 \end{equation}
 This measures how close a CCA comes to fully utilizing the link (first term)
 while keeping delay near the propagation minimum (second term). A score of 0
-means perfect utilization with zero queuing delay. All results report
-mean $\pm$ standard deviation across 5 random seeds unless noted.
+means perfect utilization with zero queuing delay.
 
-
-
-Remy, PPO, and AlphaCC are each trained on a single condition: 1.5~packets/ms
-link rate ($15~Mbps), 150~ms propagation RTT, 2 senders with
-Poisson on/off traffic (mean 1s on, 1s off). We additionally extend
-AlphaCC to multipoint training on 6 link rates spanning Remy 10x's
-range (\S\ref{sec:diverse_seeds}) to study mechanism convergence.
-All evaluations use this same traffic model.
 
 \paragraph{Evaluation protocol.}
 Primary evaluation: 50 log-spaced link rates from 1--1000~Mbps
@@ -99,8 +95,7 @@ Python reimplementation of the simulator (\S\ref{sec:calibration}),
 then hand-translated to C++ for the main comparison. We additionally
 provide Python-simulator evaluations (Figure~\ref{fig:generalization})
 that include all methods on an equal footing plus hand-designed baselines.
-Remy is a single deterministic tree (variance from sim seeds only);
-PPO std is across 6 independently trained brains.
+Remy is a single deterministic tree (variance from sim seeds only).
 
 \paragraph{Comparison summary.}
 The three methods share the same observation space (4 EWMAs), action
@@ -117,9 +112,9 @@ but differ along other axes (Table~\ref{tab:fairness}).
 \toprule
  & Remy & PPO & AlphaCC \\
 \midrule
-\textit{Representation}  & Decision tree     & Neural net (5K)   & Python source     \\
+\textit{Representation}  & Decision tree      & Neural net        & Python source     \\
 \textit{Optimizer}        & Tree search       & Proximal policy   & LLM evolution     \\
-\textit{Simulator}        & C++ (original)    & C++ (original)    & Python (reimpl.)  \\
+\textit{Training Simulator}        & C++ (original)    & C++ (original)    & Python (reimpl.)  \\
 \textit{Statefulness}     & Stateless         & Stateless         & Stateful          \\
 \bottomrule
 \end{tabular}
@@ -145,12 +140,9 @@ but differ along other axes (Table~\ref{tab:fairness}).
 
 % TODO(Armaan): Expand with architecture details, hyperparameters,
 % and analysis of PPO's strong generalization.
-We refactored Remy's C++ simulator to expose a gym-like interface and trained
-a PolicyNet (${\sim}$5000 parameters) using proximal policy optimization.
-The network maps the same 4D EWMA observations to discretized actions via
+The network maps the same 4D observations to discretized actions via
 three categorical heads (257/101/56 classes for window\_increment,
-window\_multiple, and intersend respectively). We trained 6 independent runs
-(``brains'') to measure training variance.
+window\_multiple, and intersend respectively).
 
 \subsection{AlphaCC: LLM-Guided Code Evolution}
 \label{sec:alphacc}
@@ -191,6 +183,7 @@ maintain state across calls via function attributes (e.g.,
 \texttt{evolved\_policy.phase}), enabling stateful behaviors like phase
 transitions and bandwidth estimation.
 
+
 Note that AlphaCC policies can maintain arbitrary state across calls via
 function attributes, which is additional representational power not available
 to Remy's stateless tree mapping or PPO's feedforward network. The
@@ -218,10 +211,10 @@ Table~\ref{tab:generalization} reports scores at 9 representative rates.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/cpp_generalization}
-\caption{Three representations trained at 10~Mbps, evaluated in Remy's
-C++ simulator. Remy~1x peaks near training; AlphaCC degrades most
-gradually at high rates; PPO generalizes worst.}
+\includegraphics[width=\columnwidth]{figures/link_sweep_ppt.png}
+\caption{
+CCAs from all three CCA learning schemes evaluated in Remy's C++ simulator. Link ranges used in training are specified by horizontal bars (or vertical lines for single rate training) above the plot. 
+}
 \label{fig:cpp_gen}
 \end{figure}
 
@@ -236,6 +229,9 @@ variants that cannot be evaluated in the C++ simulator.
 \caption{Python simulator evaluation. (a)~Three representations trained at 10~Mbps. (b)~Effect of training breadth and hand-designed baselines.}
 \label{fig:generalization}
 \end{figure*}
+
+\iffalse
+Armaan: Commented this out because we need to replace these results with updated CCAs and we cannot have interpolation -- we need to use link rates that we actually evaluated on.
 
 \begin{table}[t]
 \centering
@@ -262,10 +258,14 @@ Mbps & Remy~1x & PPO & AlphaCC \\
 \end{tabular}
 \end{table}
 
-Remy~1x peaks near training (best score $-$0.18 at 15~Mbps) but
-degrades sharply at both extremes, reproducing the overfitting pattern
-from the original paper~\cite{winstein2013tcp}.
+\fi
 
+Remy~1x peaks near training but
+degrades sharply at both extremes, reflecting the poor generalization also observed
+in the original paper~\cite{winstein2013tcp}.
+
+\iffalse
+Armaan: need to either remove this or update with updated results
 Among single-training-point methods (Table~\ref{tab:generalization}),
 Remy~1x is best at 5/9 rates (near training, 2--15~Mbps), while
 AlphaCC is best at 4/9 (high rates, 24--95~Mbps plus 1~Mbps). PPO
@@ -275,6 +275,7 @@ degradation: its score stays above $-$1.6 at 95~Mbps while Remy~1x
 drops to $-$2.3 and PPO to $-$3.1. At high rates ($>$37~Mbps),
 the wider-trained Remy 10x and 20x trees still outperform all
 single-point methods (Figure~\ref{fig:generalization}).
+\fi 
 
 %% ====================================================================
 %% ARMAAN'S SECTION: PPO Ablations
@@ -282,11 +283,6 @@ single-point methods (Figure~\ref{fig:generalization}).
 \subsection{PPO Ablations}
 \label{sec:ppo_ablation}
 
-% TODO(Armaan): PPO-specific ablations go here.
-% Possible subsections:
-% - Score over training time
-% - Comparison against larger network
-% - Hyperparameter sensitivity
 
 \subsection{Multipoint Training and Diverse-Seed Evolution}
 \label{sec:diverse_seeds}
@@ -313,7 +309,8 @@ Each seed was run 3 times independently (different random seeds),
 yielding 12 total evolution trajectories. Table~\ref{tab:diverse_seeds}
 summarizes the results.
 
-\begin{table}[t]
+
+%%\begin{table}[t]
 \centering
 \caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. IFS/Phase: mechanism presence. All 12 use rate-based pacing.}
 \label{tab:diverse_seeds}
@@ -627,7 +624,7 @@ non-TCP-pretrained LLM (\S\ref{sec:convergence}).
 
 AlphaCC's unique property is human-readable output. The best evolved
 policy is 115 lines of Python with named variables and clear control
-flow, whereas PPO uses ${\sim}$5000 opaque weights. AlphaCC's output
+flow, whereas PPO uses opaque weights. AlphaCC's output
 can be inspected and debugged---enabling the mechanism analysis in
 \S\ref{sec:convergence} that would be substantially harder to extract
 from a neural network.
