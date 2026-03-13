@@ -3,10 +3,10 @@
 Remy~\cite{winstein2013tcp} demonstrated that computer-generated congestion
 control algorithms could outperform decades of human design within their
 training distribution. However, Remy's decision tree CCAs generalize poorly
-to network conditions outside their training range. Despite this being identified over a decade ago, to our knowledge no
-prior work has placed alternative representations on Remy's
-generalization graphs---training on the same environments, with the
-same observation and action spaces.
+to network conditions outside their training range. Despite this being
+identified over a decade ago, no prior work has systematically compared
+alternative representations on Remy's generalization graphs---training
+on the same environments, with the same observation and action spaces.
 
 We set out to add new lines to these graphs. Keeping the observation 
 space fixed, we ask: \textbf{how do a neural network and an LLM-guided
@@ -21,31 +21,17 @@ We compare three representations:
 \item \textbf{Neural networks} (PPO): A neural network maps the same observations
   to the same actions, trained by
   proximal policy optimization (PPO) \cite{schulman2017ppo} in Remy's C++ simulator.
-\item \textbf{Source code} (AlphaCC): An LLM (GPT-5.3-codex) generates
-  Python functions mapping observations to actions, evolved by
-  mutation with simulation-based fitness.
+\item \textbf{Source code} (AlphaCC): An LLM generates
+  source-code policies mapping observations to actions, evolved by
+  mutation and evaluated via Remy's C++ simulator.
 \end{enumerate}
 
 
-\iffalse
-Armaan: We need to redo this once we have the updated results in.
-The answer is nuanced:
-were curious whether an
-approach that produces \emph{readable code}---rather than opaque
-weights---would generalize differently. 
-\textbf{Representation matters}, but no method dominates everywhere.
-Remy~1x peaks near training (best at 5/9 rates) while AlphaCC's
-in-flight scaling gives it flatter degradation at high rates (best at
-4/9). PPO generalizes worst, beaten by both at all tested rates.
-Across 12~independent evolution runs from 4~seed families, 
-\fi
-
-%% Separate the discussion about alphacc interpretation to another paragraph
-AlphaCC
-repeatedly rediscovered the same interpretable
-design---BDP-proportional scaling and rate-based pacing---regardless
-of starting point (12/12 convergence), but no systematic run surpassed
-Remy on the aggregate mean.
+Across 12~independent AlphaCC evolution runs from 4~seed families,
+every evolved policy converged on the same core mechanism---BDP-proportional
+scaling and rate-based pacing (12/12 runs). No AlphaCC run surpassed
+Remy on the aggregate mean, but AlphaCC degrades more gradually than
+Remy~1x at link rates far from training (Figure~\ref{fig:cpp_gen}).
 
 %% ====================================================================
 %% METHODS
@@ -82,20 +68,19 @@ means perfect utilization with zero queuing delay.
 
 
 \paragraph{Evaluation protocol.}
-Primary evaluation: 50 log-spaced link rates from 1--1000~Mbps
-(\texttt{np.logspace($-$1, 2, 50)} packets/ms), matching the density and
-range of Remy's original generalization plots~\cite{winstein2013tcp}.
-RTT${}={}$150~ms, 2 senders.
+All results use Remy's original C++ simulator (\texttt{sender-runner}).
+We evaluate on 99 log-spaced link rates from 0.1--100~packets/ms
+(1--1000~Mbps), with RTT${}={}$150~ms, 2~senders, mean on/off
+duration 5000~ms, and infinite buffers.
+AlphaCC scores are averaged over 10 random seeds per rate.
 
-\paragraph{Two simulators.}
-Remy and PPO are trained and evaluated in Remy's original C++ simulator;
-our primary results (Figure~\ref{fig:cpp_gen}, Table~\ref{tab:generalization})
-use this authoritative implementation. AlphaCC policies are evolved in a
-Python reimplementation of the simulator (\S\ref{sec:calibration}),
-then hand-translated to C++ for the main comparison. We additionally
-provide Python-simulator evaluations (Figure~\ref{fig:generalization})
-that include all methods on an equal footing plus hand-designed baselines.
-Remy is a single deterministic tree (variance from sim seeds only).
+\paragraph{Training and evaluation simulators.}
+Remy and PPO are trained and evaluated in the C++ simulator.
+AlphaCC policies are evolved in a Python reimplementation
+(\S\ref{sec:calibration}), then hand-translated to C++ for all
+reported results. This translation preserves the same state variables,
+thresholds, and control logic; correctness was verified by
+38/38 unit tests comparing Python and C++ outputs.
 
 \paragraph{Comparison summary.}
 The three methods share the same observation space (4 EWMAs), action
@@ -114,7 +99,7 @@ but differ along other axes (Table~\ref{tab:fairness}).
 \midrule
 \textit{Representation}  & Decision tree      & Neural net        & Python source     \\
 \textit{Optimizer}        & Tree search       & Proximal policy   & LLM evolution     \\
-\textit{Training Simulator}        & C++ (original)    & C++ (original)    & Python (reimpl.)  \\
+\textit{Training Simulator}        & C++ (original)    & C++ (original)    & Python (evolve) / C++ (eval) \\
 \textit{Statefulness}     & Stateless         & Stateless         & Stateful          \\
 \bottomrule
 \end{tabular}
@@ -168,8 +153,9 @@ proceeds as follows:
   fitness) and 50\% exploration (random archive member).
 \end{enumerate}
 
-We run 15 generations with 5 candidates per generation (75 total evaluations
-for single-point; 150 for multipoint across 6 rates).
+We run 15 generations with 5 candidates per generation (75 candidates
+for single-point training; for multipoint, each candidate is evaluated
+on 6 rates).
 
 \subsubsection{Policy Representation}
 
@@ -204,10 +190,9 @@ and control logic.
 \label{sec:main_comparison}
 
 Figure~\ref{fig:cpp_gen} shows the normalized score for all three
-representations evaluated in Remy's original C++ simulator across 50
+representations evaluated in Remy's C++ simulator across 99
 log-spaced link rates from 1--1000~Mbps. AlphaCC's best single-point
 policy was hand-translated to C++ for this evaluation (\S\ref{sec:alphacc}).
-Table~\ref{tab:generalization} reports scores at 9 representative rates.
 
 \begin{figure}[t]
 \centering
@@ -219,51 +204,9 @@ CCAs from all three CCA learning schemes evaluated in Remy's C++ simulator. Link
 \end{figure}
 
 
-\iffalse
-Armaan: Commented this out because we need to replace these results with updated CCAs and we cannot have interpolation -- we need to use link rates that we actually evaluated on.
-\begin{table}[t]
-\centering
-\caption{Normalized score (C++ simulator) at 9 link rates. Bold = best
-among single-point methods. PPO: mean of 6 brains (9-point eval,
-interpolated at non-matching rates).}
-\label{tab:generalization}
-\small
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}rrrr@{}}
-\toprule
-Mbps & Remy~1x & PPO & AlphaCC \\
-\midrule
-1.0  & $-$3.73 & $-$3.48 & \textbf{$-$3.29} \\
-2.4  & \textbf{$-$2.23} & $-$3.48 & $-$3.35 \\
-6.0  & \textbf{$-$0.89} & $-$1.78 & $-$0.82 \\
-9.5  & \textbf{$-$0.51} & $-$1.02 & $-$0.92 \\
-15.0 & \textbf{$-$0.18} & $-$0.75 & $-$0.83 \\
-24.0 & $-$0.75 & $-$1.24 & \textbf{$-$0.84} \\
-38.0 & $-$1.06 & $-$1.85 & \textbf{$-$1.06} \\
-60.0 & $-$1.72 & $-$2.45 & \textbf{$-$1.21} \\
-95.0 & $-$2.30 & $-$3.05 & \textbf{$-$1.55} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\fi
-
 Remy~1x peaks near training but
-degrades sharply at both extremes, reflecting the poor generalization also observed
-in the original paper~\cite{winstein2013tcp}.
-
-\iffalse
-Armaan: need to either remove this or update with updated results
-Among single-training-point methods (Table~\ref{tab:generalization}),
-Remy~1x is best at 5/9 rates (near training, 2--15~Mbps), while
-AlphaCC is best at 4/9 (high rates, 24--95~Mbps plus 1~Mbps). PPO
-is worst at all~9 rates---its generalization degrades sharply outside
-the training range. AlphaCC's in-flight scaling enables flatter
-degradation: its score stays above $-$1.6 at 95~Mbps while Remy~1x
-drops to $-$2.3 and PPO to $-$3.1. At high rates ($>$37~Mbps),
-the wider-trained Remy 10x and 20x trees still outperform all
-single-point methods (Figure~\ref{fig:generalization}).
-\fi 
+degrades sharply at both extremes, reflecting the poor generalization
+observed in~\cite{sivaraman2014experimental}.
 
 
 \subsection{PPO-Specific Analysis}
@@ -366,9 +309,8 @@ has the worst median ($-$3.05) though the smallest range (0.90). Copa has the hi
 
 At the highest tested rate (94.9~Mbps), 9/12 runs beat Remy; at 59.8~Mbps,
 7/12 beat Remy. Since all 12 runs share in-flight scaling,
-this mechanism alone cannot explain the between-run variance; other
-factors (coefficient tuning, phase machines) likely determine which
-runs succeed at high rates.
+shared in-flight scaling alone does not account for the between-run
+variance at these rates.
 Figure~\ref{fig:seed_comparison} shows the distribution of 9-rate means
 by seed family.
 
@@ -390,17 +332,15 @@ by seed family.
 \subsubsection{Mechanistic Convergence}
 \label{sec:convergence}
 
-The most striking result is not performance but convergence of mechanism.
-All 12 evolved policies, regardless of seed family, independently
-discovered the same core control structure:
+All 12 evolved policies, regardless of seed family,
+converged on the same core control structure:
 
 \begin{enumerate}
 \item \textbf{BDP estimation}: \texttt{bdp = min\_rtt / rec\_ewma},
   inferring the bandwidth-delay product from the ratio of minimum RTT
   to inter-receive time. Present in 12/12 policies.
 \item \textbf{BDP-proportional scaling}: window increments scale with
-  $\sqrt{\text{bdp}}$, enabling automatic adaptation to link capacity.
-  Present in 12/12 policies.
+  $\sqrt{\text{bdp}}$. Present in 12/12 policies.
 \item \textbf{Rate-based pacing}: \texttt{intersend} set from
   receive-rate estimates, not purely window-driven. Present in 12/12
   policies.
@@ -413,7 +353,7 @@ discovered the same core control structure:
 \end{enumerate}
 
 \paragraph{Mechanism coding methodology.}
-We inspected each of the 9 final policies and classified the
+We inspected each of the 12 final policies and classified the
 presence of five structural elements:
 \begin{enumerate}
 \item BDP estimation: computing ratio of minimum RTT
@@ -429,32 +369,28 @@ presence of five structural elements:
 Coding was performed by one author post hoc; labels were not used
 during evolution.
 
-This convergence is notable because the three seed families encode
-fundamentally different CCA architectures: the constant seed provides
-\emph{no} congestion-control structure at all (the LLM must invent
-everything), AIMD provides loss-based structure, and pacing provides
-rate-based structure. That all three converge on the same BDP-scaled
-pacing mechanism suggests the LLM's pre-trained knowledge of TCP
-strongly biases search toward this design. We cannot distinguish
-whether this reflects a genuine attractor in the fitness landscape
-or simply the LLM's inability to explore beyond familiar TCP
-templates; both explanations are consistent with the data.
+The three seed families encode different CCA architectures: the
+constant seed provides \emph{no} congestion-control structure (the LLM
+must invent everything), AIMD provides loss-based structure, and pacing
+provides rate-based structure. That all three converge on the same
+BDP-scaled pacing mechanism is consistent with the LLM's pre-trained
+knowledge of TCP biasing search toward this design. We cannot
+distinguish whether this reflects a genuine fitness-landscape attractor
+or the LLM's inability to explore beyond familiar TCP templates.
 
 Figure~\ref{fig:mechanism} shows the core code excerpted from three
 policies evolved from different seed families. Despite different variable
 names, smoothing constants, and threshold values, the structural pattern
-is identical: estimate BDP from \texttt{min\_rtt / rec\_ewma}, scale
+is closely similar: estimate BDP from \texttt{min\_rtt / rec\_ewma}, scale
 window changes by $\sqrt{\text{BDP}}$, and pace sends at the
 estimated receive rate.
 
-Notably, the constant seed provides \emph{zero} congestion-control
+The constant seed provides \emph{zero} congestion-control
 structure (increment=1, multiple=1.0, intersend=0), yet the LLM
-generated the full BDP-scaling mechanism in its first successful
-mutation (generation~1). This is consistent with the LLM importing
-a familiar TCP-like template early, after which evolution mainly
-tunes parameters and preserves useful structure. However, we cannot
-rule out that a different LLM or prompting strategy would discover
-qualitatively different mechanisms.
+generated the BDP-scaling mechanism early in evolution. This is
+consistent with the LLM importing a familiar TCP-like template,
+after which evolution mainly tunes parameters and preserves useful
+structure.
 
 \begin{figure}[t]
 \centering
@@ -478,7 +414,7 @@ bdp_scale = max(0.7, min(6.0, math.sqrt(bdp_pkts)))
 intersend = 1.0 / max(1e-6, target_rate)
 inc = max(1, int(1 + 1.4 * bdp_scale))
 \end{verbatim}
-\caption{Core mechanism from 3 seed families. All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. Structure is identical.}
+\caption{Core mechanism from 3 seed families. All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. Core structure is shared.}
 \label{fig:mechanism}
 \end{figure}
 
@@ -489,7 +425,7 @@ inc = max(1, int(1 + 1.4 * bdp_scale))
 
 
 Removing \texttt{intersend} (setting to 0) in the single-point best policy
-degrades score from $-$0.87 to $-$3.34---catastrophic collapse. In this
+degrades score from $-$0.87 to $-$3.34. In this
 ablation, removing pacing eliminates most of the observed advantage over
 window-only baselines.
 
@@ -523,28 +459,28 @@ High (59.8\,Mbps) & \textbf{$-$0.78}{\scriptsize$\pm$.07} & $-$1.92 & $-$5.70{\s
 \label{sec:failures}
 
 The weaker systematic runs (aimd\_r1 at $-$3.41, constant\_r3 at $-$3.33)
-and the prior catastrophic exploratory failures reveal systematic
+and prior exploratory failures reveal systematic
 failure modes:
 
 \begin{enumerate}
 \item \textbf{Architectural lock-in}: The seed plus first 3--5 mutations
   determine the policy's architecture (PID controller vs state machine,
   scale cap, coefficient ranges). Subsequent mutations can only tune
-  parameters within that architecture---they cannot escape to a
-  qualitatively different design.
+  parameters within that architecture---we did not observe escapes to
+  qualitatively different designs.
 \item \textbf{Conservative BDP caps}: One failed run committed to
   \texttt{min(16, sqrt(bdp))} early. No local mutation can change the scaling
   law without rewriting the formula. At high BDP ($>$256 packets), the cap
   makes the policy 6$\times$ slower to grow than the winning policies.
 \item \textbf{Over-engineering}: Another failed run built a PID-style
-  controller with 5+ interacting error terms---too many coefficients for
-  30 generations to co-tune.
+  controller with 5+ interacting error terms, suggesting too many
+  coefficients for 30 generations to co-tune.
 \item \textbf{Degenerate mutations}: One exploratory run produced mutations
-  scoring $-$105 (generation 27). Once evolution falls into a degenerate
-  region, AlphaCC has no mechanism to recover.
+  scoring $-$105 (generation 27). We did not observe recovery from
+  degenerate regions in any run.
 \end{enumerate}
 
-These failure modes suggest that AlphaCC is fundamentally
+These failure modes suggest that AlphaCC behaves as
 \emph{local search}---effective within an architecture, but unable to make the
 qualitative jumps needed when the initial architecture is wrong.
 
@@ -575,7 +511,7 @@ RTT changes at evaluation time. Table~\ref{tab:rtt} reports the scores.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\columnwidth]{figures/rtt_sweep}
-\caption{Score across RTT values and link rates. AIMD most consistent; AlphaCC highest variance.}
+\caption{Score across RTT values and link rates. AIMD has the narrowest range across conditions; AlphaCC the widest.}
 \label{fig:rtt}
 \end{figure}
 
@@ -614,35 +550,33 @@ AIMD's range is 1.02 units across the same conditions.
 
 \textbf{Representation shapes generalization profile.} Each
 representation degrades differently outside its training distribution.
-Remy~1x overfits tightly to {\sim}10~Mbps and degrades sharply at
-both extremes---the original finding of~\cite{sivaraman2014experimental}.
-PPO degrades most steeply, worse than both Remy and AlphaCC at all
-tested rates. AlphaCC's in-flight scaling adapts window increments to
-link capacity, giving it the flattest curve at high rates but losing
-near training where Remy's precise tree fit dominates.
+Remy~1x peaks near training (15~Mbps) and degrades sharply at
+both extremes---the finding of~\cite{sivaraman2014experimental}.
+AlphaCC's in-flight scaling adapts window increments to
+link capacity, producing more gradual degradation at high rates but
+losing near training where Remy's precise tree fit dominates.
 
-\textbf{No method dominates everywhere.} Remy~1x is best near training
-(5/9 rates), AlphaCC at high rates (4/9), PPO at none.
+\textbf{No method dominates everywhere.} Each representation has
+a region where it performs best (Figure~\ref{fig:cpp_gen}).
 
-\textbf{PPO underperforms both.} PPO is worse than Remy at all~9
-rates in the C++ simulator despite sharing the same observations,
+\textbf{PPO.} PPO underperforms Remy across most of the rate range
+in the C++ simulator despite sharing the same observations,
 actions, and training simulator. We did not conduct a thorough
 hyperparameter sweep (6~brains, no architecture search), so we cannot
-determine whether this reflects a fundamental limitation of the
+determine whether this reflects a limitation of the
 neural-network representation or insufficient training.
 
 \textbf{Mechanistic convergence.} All 12~AlphaCC runs converge on
-in-flight-scaled pacing regardless of seed family. The most
-parsimonious explanation is the LLM's TCP prior:
-GPT-5.3-codex was trained on millions of TCP implementations, making
-in-flight scaling the path of least resistance. We cannot distinguish
+in-flight-scaled pacing regardless of seed family. This is consistent
+with the LLM's pre-trained knowledge of TCP biasing search
+toward familiar designs. We cannot distinguish
 this from a genuine fitness-landscape attractor without a
 non-TCP-pretrained LLM (\S\ref{sec:convergence}).
 
 \subsection{Interpretability}
 
-AlphaCC's unique property is human-readable output. The best evolved
-policy is 115 lines of Python with named variables and clear control
+A practical advantage of the source-code representation is human-readable output.
+The best evolved policy uses named variables and clear control
 flow, whereas PPO uses opaque weights. AlphaCC's output
 can be inspected and debugged---enabling the mechanism analysis in
 \S\ref{sec:convergence} that would be substantially harder to extract
@@ -651,9 +585,9 @@ from a neural network.
 \subsection{Limitations}
 
 \begin{enumerate}
-\item \textbf{PPO baseline quality}: PPO's strong generalization may partly
-  reflect its training setup; further hyperparameter tuning could improve or
-  diminish its advantage relative to other methods.
+\item \textbf{PPO baseline quality}: PPO's performance may partly
+  reflect its training setup; further hyperparameter tuning could change
+  its relative standing.
 \item \textbf{Simulator mismatch}: Remy/PPO trained in C++;
   AlphaCC trained in Python. Cross-method scores may reflect simulator
   differences as well as representation differences.
@@ -703,23 +637,24 @@ control, respectively.
 
 \section{Conclusion}
 
-We set out to put new lines on Remy's generalization graphs---training
-a neural network, an LLM-guided code evolution system, and Remy's
-decision trees all on the same single condition (10~Mbps, 150~ms RTT, 2
-senders), then evaluating across 1--1000~Mbps. Three findings:
+We placed two new representations on Remy's generalization graphs---a
+neural network (PPO) and an LLM-guided code evolution system
+(AlphaCC)---alongside Remy's decision trees, all trained on a single
+condition (15~Mbps, 150~ms RTT, 2~senders) and evaluated across
+1--1000~Mbps. Three findings:
 
 \begin{enumerate}
-\item \textbf{Representation shapes generalization.} Remy peaks
-  near training (best at 5/9 rates) but degrades sharply at both
-  extremes. PPO generalizes worst, beaten by both at all~9
-  rates. AlphaCC is best at 4/9 rates (high rates), with the
-  flattest degradation curve. No method dominates everywhere.
+\item \textbf{Representation shapes generalization.} Each
+  representation degrades differently outside training. Remy peaks
+  near training but degrades sharply at both extremes. AlphaCC
+  degrades more gradually at high rates. No method dominates
+  everywhere (Figure~\ref{fig:cpp_gen}).
 
 \item \textbf{Mechanistic convergence.} Across 12~independent
   AlphaCC runs from 4~seed families, every evolved policy contains
-  in-flight-proportional scaling and rate-based pacing (12/12),
-  most likely reflecting the LLM's TCP prior rather than a
-  fitness-landscape property.
+  in-flight-proportional scaling and rate-based pacing (12/12).
+  This is consistent with the LLM's TCP prior biasing search,
+  though we cannot rule out a fitness-landscape attractor.
 
 \item \textbf{Reliable mechanism discovery $\neq$ reliable
   performance.} AlphaCC's evolution is high-variance (means
