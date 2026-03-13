@@ -210,25 +210,13 @@ scores at 9 representative link rates for precise comparison.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/generalization}
-\caption{Normalized score vs.\ link rate (50 log-spaced points, 1--1000~Mbps).
-All single-point methods trained on 10~Mbps, 150~ms RTT, 2 senders.
-AlphaCC single-pt (solid purple) peaks near training but degrades at
-high rates like Remy~1x. AlphaCC multi-pt (dashed purple, 6 rates)
-shows broader coverage from multipoint training; faint lines show all
-9 diverse-seed runs. PPO (red, $\pm$1$\sigma$ across 6 brains)
-generalizes well across the full range. Remy 1000x from the
-Learnability study~\cite{sivaraman2014experimental} still degrades
-despite maximal training breadth. Shaded: Remy 1x--20x training range.}
+\caption{Normalized score vs.\ link rate (1--1000~Mbps). All single-point methods trained at 10~Mbps. Shaded region: Remy training range.}
 \label{fig:generalization}
 \end{figure*}
 
 \begin{table*}[t]
 \centering
-\caption{Normalized score across 9 link rates. Bold marks the best
-score. Remy/PPO/AlphaCC-1pt: all trained on a single condition
-(10~Mbps, 150~ms, 2 senders). AlphaCC-6pt: best multipoint run
-(pac\_r1, trained on 6 rates). PPO: mean$\pm$std across 6 brains;
-BBR/Copa/AIMD: 5 seeds.}
+\caption{Normalized score across 9 link rates. Bold = best. All learned methods trained at 10~Mbps; AlphaCC-6pt trained on 6 rates.}
 \label{tab:generalization}
 \small
 \setlength{\tabcolsep}{6pt}
@@ -308,11 +296,7 @@ summarizes the results.
 
 \begin{table}[t]
 \centering
-\caption{Diverse-seed evolution: 12 runs across 4 seed
-families, evaluated on 9 link rates. Remy~1$\times$: $-$1.35
-(Python eval). $\Delta$ = run mean $-$ Remy mean (negative = worse).
-IFS: in-flight-proportional scaling present; Phase: phase machine present.
-All 12 runs contain rate-based pacing (\S\ref{sec:convergence}).}
+\caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. IFS/Phase: mechanism presence. All 12 use rate-based pacing.}
 \label{tab:diverse_seeds}
 \footnotesize
 \begin{tabular}{@{}llrrccc@{}}
@@ -357,18 +341,14 @@ by seed family.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/seed_boxplot}
-\caption{Distribution of 9-rate mean scores by seed family. Pacing seeds
-are most reliable (closest to Remy). AIMD seeds have the worst median
-performance. Dashed: Remy~1x ($-$1.35).}
+\caption{9-rate mean by seed family. Dashed: Remy ($-$1.35).}
 \label{fig:seed_comparison}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/seed_lineplot}
-\caption{Diverse-seed AlphaCC vs Remy across 9 link rates (4 families $\times$ 3 reps).
-Pacing runs (blue) are closest to Remy; Copa (red) has the highest variance.
-Most runs beat Remy at high rates (9/12 at 94.9~Mbps) but lose near training.}
+\caption{AlphaCC vs Remy across 9 link rates (4 families $\times$ 3 reps). Thick: family medians; faint: individual runs.}
 \label{fig:multipoint}
 \end{figure}
 
@@ -464,9 +444,7 @@ bdp_scale = max(0.7, min(6.0, math.sqrt(bdp_pkts)))
 intersend = 1.0 / max(1e-6, target_rate)
 inc = max(1, int(1 + 1.4 * bdp_scale))
 \end{verbatim}
-\caption{Core mechanism from 3 policies (one per seed family). All compute
-\texttt{bdp = min\_rtt / rec\_ewma}, scale by $\sqrt{\text{bdp}}$, and
-pace from receive rate. Names differ; structure is identical.}
+\caption{Core mechanism from 3 seed families. All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. Structure is identical.}
 \label{fig:mechanism}
 \end{figure}
 
@@ -546,11 +524,7 @@ training-condition fitness by generation~2.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\columnwidth]{figures/evolution_trajectory}
-\caption{AlphaCC evolution trajectory (12 runs, 15 generations each). Y-axis:
-multipoint training fitness (6-rate mean score, not the 9-rate evaluation
-mean). Gray: all candidates; colored lines: per-run running best by seed
-family; black dashed: global running best. Clipped to $[-8, 0]$; degenerate
-outliers omitted. Most improvement in first 3 generations.}
+\caption{Evolution trajectory (12 runs, 15 generations). Colored: per-run best by family; black: global best. Most improvement in first 3 generations.}
 \label{fig:evolution}
 \end{figure}
 
@@ -566,9 +540,7 @@ RTT changes at evaluation time. Table~\ref{tab:rtt} reports the scores.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\columnwidth]{figures/rtt_sweep}
-\caption{Normalized score across RTT values (50, 150, 300~ms) and link rates
-(9.5, 59.8~Mbps). AIMD is the most consistent across conditions;
-AlphaCC has the largest variance (best: $-$0.38; worst: $-$4.94).}
+\caption{Score across RTT values and link rates. AIMD most consistent; AlphaCC highest variance.}
 \label{fig:rtt}
 \end{figure}
 
