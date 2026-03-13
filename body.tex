@@ -166,24 +166,22 @@ neural network.
 
 The network takes as input the four-dimensional observation
 $\mathbf{x} = (\text{sewma},\, \text{rewma},\, \text{rtt\_ratio},\, \text{slow\_rewma})$
-and produces three unnormalized score vectors
-$\mathbf{z}^{\text{wi}} \in \mathbb{R}^{257}$,
-$\mathbf{z}^{\text{wm}} \in \mathbb{R}^{101}$, and
-$\mathbf{z}^{\text{is}} \in \mathbb{R}^{56}$,
-one entry per discretized value in the window increment, window multiple, and
-intersend action spaces respectively. Each score vector is independently
-normalized into a probability distribution via a temperature-scaled softmax:
+and produces a matrix of unnormalized scores $\mathbf{Z} \in \mathbb{R}^{K
+\times N_k}$, where $K = 3$ is the number of action dimensions (window
+increment, window multiple, and minimum intersend) and $N_k$ is the number of
+discrete bins for dimension $k$. Each row is independently normalized into a
+probability distribution via a temperature-scaled softmax:
 %
 \begin{equation}
-  \pi(a^k_i) = \frac{\exp(z^{k}_i / \tau)}{\sum_j \exp(z^{k}_j / \tau)},
-  \qquad k \in \{\text{wi},\, \text{wm},\, \text{is}\},
+  \pi(a^k_i) = \frac{\exp(z_{k,i} / \tau)}{\sum_j \exp(z_{k,j} / \tau)},
 \end{equation}
 %
 where $\tau$ is a temperature parameter that controls the entropy of each output
-distribution.  At each decision point, an action index is sampled independently
+distribution. At each decision point, an action index is sampled independently
 from each of the three categorical distributions, selecting a specific
 discretized value for the window increment, window multiple, and minimum
 intersend.
+
 
 
 
