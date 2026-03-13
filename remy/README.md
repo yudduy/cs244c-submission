@@ -1,6 +1,6 @@
 # Remy + PPO
 
-**CS 244C Winter 2026** — Armaan Abraham, Duy Nguyen, Andrew Grant
+**CS 244C Winter 2026** — Armaan Abraham, Duy Nguyen, Andrew Grants
 
 Fork of [Remy](http://web.mit.edu/remy) (Winstein & Balakrishnan, SIGCOMM 2013) with a PPO neural network trainer (`rattrainer`) as an alternative to whisker-tree optimization.
 
