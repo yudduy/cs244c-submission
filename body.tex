@@ -28,17 +28,18 @@ We compare three representations:
 \end{enumerate}
 
 The third paradigm was not part of the original plan. We added it after
-observing that PPO generalizes surprisingly well, and were curious
-whether an approach
-that produces \emph{readable code}---rather than opaque weights---would
-generalize differently. The answer is surprising: across 12 independent
-evolution runs from 4 seed families (constant, AIMD, Copa, pacing), the method
-repeatedly rediscovered the same interpretable rate-aware
-design---BDP-proportional scaling and rate-based pacing---regardless of the
-starting point (12/12 convergence). However, the best systematic run ($-$1.40)
-only approached, and did not surpass, Remy ($-$1.35) on the aggregate 9-rate
-mean, indicating reliable mechanistic convergence without a robust
-performance win.
+observing that PPO does not outperform Remy, and were curious whether an
+approach that produces \emph{readable code}---rather than opaque
+weights---would generalize differently. The answer is nuanced:
+\textbf{Representation matters}, but no method dominates everywhere.
+Remy~1x peaks near training (best at 5/9 rates) while AlphaCC's
+in-flight scaling gives it flatter degradation at high rates (best at
+4/9). PPO generalizes worst, beaten by both at all tested rates.
+Across 12~independent evolution runs from 4~seed families, AlphaCC
+repeatedly rediscovered the same interpretable
+design---BDP-proportional scaling and rate-based pacing---regardless
+of starting point (12/12 convergence), but no systematic run surpassed
+Remy on the aggregate mean.
 
 
 %% ====================================================================
@@ -61,7 +62,7 @@ We use the same dumbbell network topology as in Remy \cite{winstein2013tcp}, con
 % - Action space: window_increment, window_multiple, intersend
 % - Utility function: U = log2(throughput) - delta * log2(delay), delta=1
 % - ConfigRange and how Remy trains
-% - Learnability paper trees (1x, 10x, 20x, 1000x) and what they mean
+% - Learnability paper trees (1x, 10x, 20x) and what they mean
 %
 % Keep the following shared definitions (other sections reference them):
 
@@ -88,14 +89,18 @@ All evaluations use this same traffic model.
 Primary evaluation: 50 log-spaced link rates from 1--1000~Mbps
 (\texttt{np.logspace($-$1, 2, 50)} packets/ms), matching the density and
 range of Remy's original generalization plots~\cite{winstein2013tcp}.
-RTT${}={}$150~ms, 2 senders. Simulation duration scales inversely with
-link rate (30s at low rates, 5s at $>$100~Mbps) to keep wall-clock time
-bounded while ensuring at least 33~RTTs of traffic at every rate.
-Extended evaluation: 3 RTT values (50, 150, 300~ms) $\times$ 2 link rates
-(9.5 and 59.8~Mbps).
+RTT${}={}$150~ms, 2 senders.
+
+\paragraph{Two simulators.}
+Remy and PPO are trained and evaluated in Remy's original C++ simulator;
+our primary results (Figure~\ref{fig:cpp_gen}, Table~\ref{tab:generalization})
+use this authoritative implementation. AlphaCC policies are evolved in a
+Python reimplementation of the simulator (\S\ref{sec:calibration}),
+then hand-translated to C++ for the main comparison. We additionally
+provide Python-simulator evaluations (Figure~\ref{fig:generalization})
+that include all methods on an equal footing plus hand-designed baselines.
 Remy is a single deterministic tree (variance from sim seeds only);
-PPO std is across 6 independently trained brains; Copa, AIMD, and
-AlphaCC std are across 5 sim seeds.
+PPO std is across 6 independently trained brains.
 
 \paragraph{Comparison summary.}
 The three methods share the same observation space (4 EWMAs), action
@@ -190,7 +195,10 @@ Note that AlphaCC policies can maintain arbitrary state across calls via
 function attributes, which is additional representational power not available
 to Remy's stateless tree mapping or PPO's feedforward network. The
 statefulness ablation (\S\ref{sec:ablation}) partially addresses this
-confound.
+confound. For the main comparison (Figure~\ref{fig:cpp_gen}), we
+hand-translated the best evolved policy to C++ as a new sender class
+in Remy's codebase, preserving the same state variables, thresholds,
+and control logic.
 
 
 %% ====================================================================
@@ -202,56 +210,71 @@ confound.
 \subsection{Main Comparison: All Methods Across Link Rates}
 \label{sec:main_comparison}
 
-Figure~\ref{fig:generalization} shows the normalized score for all methods
-across 50 log-spaced link rates from 1--1000~Mbps, matching the density and
-range of Remy's original evaluation. Table~\ref{tab:generalization} reports
-scores at 9 representative link rates for precise comparison.
+Figure~\ref{fig:cpp_gen} shows the normalized score for all three
+representations evaluated in Remy's original C++ simulator across 50
+log-spaced link rates from 1--1000~Mbps. AlphaCC's best single-point
+policy was hand-translated to C++ for this evaluation (\S\ref{sec:alphacc}).
+Table~\ref{tab:generalization} reports scores at 9 representative rates.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/cpp_generalization}
+\caption{Three representations trained at 10~Mbps, evaluated in Remy's
+C++ simulator. Remy~1x peaks near training; AlphaCC degrades most
+gradually at high rates; PPO generalizes worst.}
+\label{fig:cpp_gen}
+\end{figure}
+
+Figure~\ref{fig:generalization} shows the same comparison in our Python
+reimplementation (\S\ref{sec:calibration}), which additionally includes
+Remy 10x/20x trees, hand-designed baselines, and AlphaCC multipoint
+variants that cannot be evaluated in the C++ simulator.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/generalization}
-\caption{(a)~Three representations trained at 10~Mbps. (b)~Effect of training breadth and hand-designed baselines.}
+\caption{Python simulator evaluation. (a)~Three representations trained at 10~Mbps. (b)~Effect of training breadth and hand-designed baselines.}
 \label{fig:generalization}
 \end{figure*}
 
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\caption{Normalized score across 9 link rates. Bold = best. All learned methods trained at 10~Mbps; AlphaCC-6pt trained on 6 rates.}
+\caption{Normalized score (C++ simulator) at 9 link rates. Bold = best
+among single-point methods. PPO: mean of 6 brains (9-point eval,
+interpolated at non-matching rates).}
 \label{tab:generalization}
 \small
-\setlength{\tabcolsep}{6pt}
-\begin{tabular}{@{}rrrrrrrr@{}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}rrrr@{}}
 \toprule
-Mbps & Remy & PPO & Copa & AIMD & BBR & \multicolumn{1}{c}{\shortstack{Alpha\\CC-1pt}} & \multicolumn{1}{c}{\shortstack{Alpha\\CC-6pt}} \\
+Mbps & Remy~1x & PPO & AlphaCC \\
 \midrule
-2.4  & $-$2.16 & $-$1.74{\scriptsize$\pm$.03} & \textbf{$-$1.36}{\scriptsize$\pm$.10} & $-$1.45{\scriptsize$\pm$.08} & $-$1.79{\scriptsize$\pm$.73} & $-$1.89 & $-$1.30 \\
-3.8  & $-$1.55 & $-$1.34{\scriptsize$\pm$.05} & $-$1.83{\scriptsize$\pm$.10} & $-$1.46{\scriptsize$\pm$.07} & $-$1.75{\scriptsize$\pm$.72} & \textbf{$-$1.13} & $-$1.15 \\
-6.0  & \textbf{$-$0.91} & $-$0.93{\scriptsize$\pm$.03} & $-$2.42{\scriptsize$\pm$.11} & $-$1.62{\scriptsize$\pm$.10} & $-$1.77{\scriptsize$\pm$.71} & $-$0.93 & $-$1.34 \\
-9.5  & $-$0.60 & \textbf{$-$0.51}{\scriptsize$\pm$.02} & $-$3.06{\scriptsize$\pm$.12} & $-$1.81{\scriptsize$\pm$.14} & $-$1.72{\scriptsize$\pm$.66} & $-$0.87 & $-$1.10 \\
-15.0 & $-$0.40 & \textbf{$-$0.36}{\scriptsize$\pm$.01} & $-$3.71{\scriptsize$\pm$.12} & $-$1.82{\scriptsize$\pm$.12} & $-$1.70{\scriptsize$\pm$.66} & $-$0.56 & $-$1.73 \\
-23.8 & $-$0.80 & $-$0.57{\scriptsize$\pm$.02} & $-$4.37{\scriptsize$\pm$.12} & $-$2.08{\scriptsize$\pm$.19} & $-$1.67{\scriptsize$\pm$.69} & \textbf{$-$0.54} & $-$1.45 \\
-37.7 & $-$1.26 & $-$0.90{\scriptsize$\pm$.01} & $-$5.03{\scriptsize$\pm$.12} & $-$2.28{\scriptsize$\pm$.21} & $-$2.17{\scriptsize$\pm$.67} & \textbf{$-$0.52} & $-$1.28 \\
-59.8 & $-$1.92 & $-$1.23{\scriptsize$\pm$.01} & $-$5.70{\scriptsize$\pm$.12} & $-$2.37{\scriptsize$\pm$.20} & $-$2.40{\scriptsize$\pm$.85} & \textbf{$-$1.07} & $-$1.43 \\
-94.9 & $-$2.59 & $-$1.56{\scriptsize$\pm$.02} & $-$6.36{\scriptsize$\pm$.12} & $-$2.65{\scriptsize$\pm$.35} & $-$2.56{\scriptsize$\pm$.88} & \textbf{$-$1.51} & $-$1.81 \\
+1.0  & $-$3.73 & $-$3.48 & \textbf{$-$3.29} \\
+2.4  & \textbf{$-$2.23} & $-$3.48 & $-$3.35 \\
+6.0  & \textbf{$-$0.89} & $-$1.78 & $-$0.82 \\
+9.5  & \textbf{$-$0.51} & $-$1.02 & $-$0.92 \\
+15.0 & \textbf{$-$0.18} & $-$0.75 & $-$0.83 \\
+24.0 & $-$0.75 & $-$1.24 & \textbf{$-$0.84} \\
+38.0 & $-$1.06 & $-$1.85 & \textbf{$-$1.06} \\
+60.0 & $-$1.72 & $-$2.45 & \textbf{$-$1.21} \\
+95.0 & $-$2.30 & $-$3.05 & \textbf{$-$1.55} \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
-Remy~1x peaks near training (10~Mbps) but degrades sharply at both
-extremes, reproducing the overfitting pattern from the original
-paper~\cite{winstein2013tcp}. The broader Remy 10x and 20x trees
-trade peak performance for wider coverage but still degrade outside
-their training ranges.
+Remy~1x peaks near training (best score $-$0.18 at 15~Mbps) but
+degrades sharply at both extremes, reproducing the overfitting pattern
+from the original paper~\cite{winstein2013tcp}.
 
-Among single-training-point methods, AlphaCC achieves the best score at
-5 of 9 evaluation rates (4 above 22~Mbps plus 3.6~Mbps), outperforming both PPO and
-Remy at high rates (Table~\ref{tab:generalization}). PPO is best at 2
-rates near training (9.5 and 15~Mbps) and degrades more gracefully than
-Remy~1x, beating it at 8/9 rates. Single-point AlphaCC peaks near
-training like Remy~1x but degrades less steeply, maintaining scores
-above $-$1.1 through 60~Mbps. At high rates ($>$37~Mbps), Remy 10x
-and 20x still outperform PPO (Figure~\ref{fig:generalization}),
-reflecting their wider training ranges.
+Among single-training-point methods (Table~\ref{tab:generalization}),
+Remy~1x is best at 5/9 rates (near training, 2--15~Mbps), while
+AlphaCC is best at 4/9 (high rates, 24--95~Mbps plus 1~Mbps). PPO
+is worst at all~9 rates---its generalization degrades sharply outside
+the training range. AlphaCC's in-flight scaling enables flatter
+degradation: its score stays above $-$1.6 at 95~Mbps while Remy~1x
+drops to $-$2.3 and PPO to $-$3.1. At high rates ($>$37~Mbps),
+the wider-trained Remy 10x and 20x trees still outperform all
+single-point methods (Figure~\ref{fig:generalization}).
 
 %% ====================================================================
 %% ARMAAN'S SECTION: PPO Ablations
@@ -464,9 +487,9 @@ at 9.5~Mbps (near training) and $-$0.75 at 2.4~Mbps
 
 \begin{table}[t]
 \centering
-\caption{Statefulness ablation. AlphaCC: best 3 of 5 exploratory policies
-(best 3 of 5 exploratory). Copa: mean $\pm$ std over 5 seeds. Stateless: single evolution
-run.}
+\caption{Statefulness ablation. AlphaCC: best 3 of 5 exploratory
+policies. Copa: mean $\pm$ std over 5 seeds. Stateless: single
+evolution run.}
 \label{tab:ablation}
 \footnotesize
 \begin{tabular}{@{}lrrr@{}}
@@ -577,23 +600,20 @@ AIMD's range is 1.02 units across the same conditions.
 representation degrades differently outside its training distribution.
 Remy~1x overfits tightly to {\sim}10~Mbps and degrades sharply at
 both extremes---the original finding of~\cite{sivaraman2014experimental}.
-PPO degrades more uniformly but never matches Remy, even near training.
-AlphaCC's in-flight scaling adapts window increments to link capacity,
-giving it the flattest curve at high rates but losing near training
-where Remy's precise tree fit dominates.
+PPO degrades most steeply, worse than both Remy and AlphaCC at all
+tested rates. AlphaCC's in-flight scaling adapts window increments to
+link capacity, giving it the flattest curve at high rates but losing
+near training where Remy's precise tree fit dominates.
 
-\textbf{No method dominates everywhere.} Remy is best near training
-(3/9 rates), AlphaCC at high rates (5/9), PPO at none. On the 9-rate
-mean, Remy is best ($-$1.35); AlphaCC's best systematic run ($-$1.40)
-comes within 3\%. The process is high-variance (means $-$1.40 to
-$-$3.53 across 12~runs).
+\textbf{No method dominates everywhere.} Remy~1x is best near training
+(5/9 rates), AlphaCC at high rates (4/9), PPO at none.
 
 \textbf{PPO underperforms both.} PPO is worse than Remy at all~9
-rates despite sharing the same observations, actions, and C++
-simulator. We did not conduct a thorough hyperparameter sweep
-(6~brains, no architecture search), so we cannot determine whether
-this reflects a fundamental limitation of the neural-network
-representation or insufficient training.
+rates in the C++ simulator despite sharing the same observations,
+actions, and training simulator. We did not conduct a thorough
+hyperparameter sweep (6~brains, no architecture search), so we cannot
+determine whether this reflects a fundamental limitation of the
+neural-network representation or insufficient training.
 
 \textbf{Mechanistic convergence.} All 12~AlphaCC runs converge on
 in-flight-scaled pacing regardless of seed family. The most
@@ -639,8 +659,8 @@ from a neural network.
 Remy~\cite{winstein2013tcp} pioneered automated CCA design with decision tree
 optimization. Sivaraman et al.~\cite{sivaraman2014experimental} studied its
 generalization, finding that trees trained on narrow ranges degrade on wider
-conditions but that very wide training ranges (1000$\times$) achieve
-within-3\% throughput of narrow-range trees.
+conditions while broader training ranges trade peak performance for
+robustness.
 
 Several deep RL approaches followed: PCC~\cite{dong2015pcc} used online
 learning for utility maximization; Aurora~\cite{jay2019deep} applied deep RL
@@ -674,11 +694,10 @@ senders), then evaluating across 1--1000~Mbps. Three findings:
 
 \begin{enumerate}
 \item \textbf{Representation shapes generalization.} Remy peaks
-  near training (best at 3/9 rates) but degrades sharply at both
-  extremes. PPO degrades more uniformly but is worse at all~9
-  rates. AlphaCC is best at 5/9 rates (high rates). No method
-  dominates everywhere; no systematic AlphaCC run beat Remy on the
-  9-rate mean (best: $-$1.40 vs.\ $-$1.35).
+  near training (best at 5/9 rates) but degrades sharply at both
+  extremes. PPO generalizes worst, beaten by both at all~9
+  rates. AlphaCC is best at 4/9 rates (high rates), with the
+  flattest degradation curve. No method dominates everywhere.
 
 \item \textbf{Mechanistic convergence.} Across 12~independent
   AlphaCC runs from 4~seed families, every evolved policy contains
