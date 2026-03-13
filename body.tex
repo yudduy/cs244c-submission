@@ -214,12 +214,14 @@ same codebase for PPO.
 
 \begin{enumerate}
 \item \textbf{Seed population}: We initialize with 5 hand-written
-  Python policies: AIMD (halve window when \texttt{rtt\_ratio} $> 2$),
-  Copa (target rate $= 1/(\delta \cdot q_{\text{delay}})$),
-  a BBR-like 8-phase gain cycle with bandwidth estimation,
-  a rate-based pacer (intersend $= 1/(\text{rec\_rate} \cdot \text{gain})$),
-  and a phase-based adaptive controller (startup/steady with
-  rate-ratio switching).
+  Python policies spanning three mechanism families:
+  AIMD (halve window when \texttt{rtt\_ratio} $> 2$),
+  Copa~\cite{arun2018copa} (target rate $= 1/(\delta \cdot q_{\text{delay}})$),
+  and three seeds we wrote to cover rate-based control:
+  a BBR-inspired~\cite{cardwell2017bbr} 8-phase gain cycle with bandwidth
+  estimation, a pacer setting intersend from the receive-rate EWMA,
+  and a phase-switching controller (startup/steady with
+  rate-ratio thresholds).
 
 \item \textbf{Mutation}: GPT-5.3-codex receives the parent
   policy's full source code, its per-rate fitness scores, and the
