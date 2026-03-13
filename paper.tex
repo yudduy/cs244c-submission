@@ -51,22 +51,8 @@ one has put alternative representations on Remy's generalization graphs under
 the same setup: same observations, same actions, same environments.
 
 We add two new lines. Training a PPO neural network and AlphaCC (an
-LLM-guided code evolution system) on a single condition (10~Mbps, 150~ms RTT,
+LLM-guided code evolution system) on a single condition (15~Mbps, 150~ms RTT,
 2~senders), we evaluate across a 1000$\times$ range of link rates.
-
-\iffalse
-Armaan: Need to rewrite this once updated results are in
-Remy peaks near training (best at 3/9 rates)
-but degrades sharply at both extremes; PPO degrades more uniformly but is
-worse than Remy at all~9 rates; AlphaCC is best at 5/9 rates (high link
-rates), with the flattest degradation curve---yet no method dominates
-everywhere. We also run 12~independent AlphaCC evolution runs from
-4~structurally different seed families: all~12 converge on the same
-interpretable design (in-flight-proportional scaling and rate-based pacing),
-suggesting the LLM's TCP prior strongly constrains search. Despite this
-reliable mechanism discovery, no systematic run surpasses Remy on the
-aggregate mean.
-\fi
 
 \end{abstract}
 
