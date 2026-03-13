@@ -218,21 +218,9 @@ CCAs from all three CCA learning schemes evaluated in Remy's C++ simulator. Link
 \label{fig:cpp_gen}
 \end{figure}
 
-Figure~\ref{fig:generalization} shows the same comparison in our Python
-reimplementation (\S\ref{sec:calibration}), which additionally includes
-Remy 10x/20x trees, hand-designed baselines, and AlphaCC multipoint
-variants that cannot be evaluated in the C++ simulator.
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{figures/generalization}
-\caption{Python simulator evaluation. (a)~Three representations trained at 10~Mbps. (b)~Effect of training breadth and hand-designed baselines.}
-\label{fig:generalization}
-\end{figure*}
 
 \iffalse
 Armaan: Commented this out because we need to replace these results with updated CCAs and we cannot have interpolation -- we need to use link rates that we actually evaluated on.
-
 \begin{table}[t]
 \centering
 \caption{Normalized score (C++ simulator) at 9 link rates. Bold = best
@@ -277,14 +265,44 @@ the wider-trained Remy 10x and 20x trees still outperform all
 single-point methods (Figure~\ref{fig:generalization}).
 \fi 
 
-%% ====================================================================
-%% ARMAAN'S SECTION: PPO Ablations
-%% ====================================================================
-\subsection{PPO Ablations}
-\label{sec:ppo_ablation}
+
+\subsection{PPO-Specific Analysis}
+\label{sec:ppo_results}
+\subsubsection{PPO Policy Sampling Temperature}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/PPO_temp_sweep.png}
+\caption{PPO CCA performance across link rates vs sampling temperature, which tunes the sharpness (entropy) of the policy's action distribution. Higher temperature means higher entropy.}
+\label{fig:ppo_temp_sweep}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/ppo_trajectory.png}
+\caption{PPO unnormalized utility over the course of training.}
+\label{fig:ppo_temp_sweep}
+\end{figure}
+
+onsistently decreases performance at training link rate, but can improve performance on out-of-distribution link rates
 
 
-\subsection{Multipoint Training and Diverse-Seed Evolution}
+\subsection{AlphaCC-Specific Analysis}
+\label{sec:ppo_results}
+ 
+Figure~\ref{fig:generalization} shows the same comparison in our Python
+reimplementation (\S\ref{sec:calibration}), which additionally includes
+Remy 10x/20x trees, hand-designed baselines, and AlphaCC multipoint
+variants that cannot be evaluated in the C++ simulator.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/generalization}
+\caption{Python simulator evaluation. (a)~Three representations trained at 10~Mbps. (b)~Effect of training breadth and hand-designed baselines.}
+\label{fig:generalization}
+\end{figure*}
+
+\subsubsection{Multipoint Training and Diverse-Seed Evolution}
 \label{sec:diverse_seeds}
 
 To test how AlphaCC responds to additional environmental feedback, we
@@ -310,7 +328,7 @@ yielding 12 total evolution trajectories. Table~\ref{tab:diverse_seeds}
 summarizes the results.
 
 
-%%\begin{table}[t]
+\begin{table}[t]
 \centering
 \caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. IFS/Phase: mechanism presence. All 12 use rate-based pacing.}
 \label{tab:diverse_seeds}
@@ -369,7 +387,7 @@ by seed family.
 \end{figure}
 
 
-\subsection{Mechanistic Convergence}
+\subsubsection{Mechanistic Convergence}
 \label{sec:convergence}
 
 The most striking result is not performance but convergence of mechanism.
@@ -465,10 +483,10 @@ inc = max(1, int(1 + 1.4 * bdp_scale))
 \end{figure}
 
 
-\subsection{AlphaCC Ablations}
-\label{sec:ablation}
 
 \subsubsection{Pacing Ablation}
+\label{sec:pacing_ablation}
+
 
 Removing \texttt{intersend} (setting to 0) in the single-point best policy
 degrades score from $-$0.87 to $-$3.34---catastrophic collapse. In this
@@ -476,6 +494,7 @@ ablation, removing pacing eliminates most of the observed advantage over
 window-only baselines.
 
 \subsubsection{Statefulness Ablation}
+\label{sec:statefulness_ablation}
 
 A 10-generation stateless evolution (no function attributes---each call
 depends only on current observations) produced a policy scoring $-$2.54
@@ -545,7 +564,7 @@ training-condition fitness by generation~2.
 \end{figure}
 
 
-\subsection{Generalization Across RTT}
+\subsubsection{Generalization Across RTT}
 \label{sec:rtt}
 
 Figure~\ref{fig:rtt} shows performance for Copa, AIMD, BBR, and AlphaCC
