@@ -591,10 +591,11 @@ control, respectively.
 
 We compared two additional representations under Remy's training and
 evaluation setup---a neural network (PPO) and an LLM-guided code
-evolution system (AlphaCC)---alongside Remy's decision trees. For the main comparison,
-all three were trained on a single condition
-(15~Mbps, 150~ms RTT, 2~senders) and evaluated across
-1--1000~Mbps. Three findings:
+evolution system (AlphaCC)---alongside Remy's decision trees. For the
+main comparison, Remy and PPO were trained on a single condition
+(15~Mbps, 150~ms RTT, 2~senders); AlphaCC was evaluated in both
+single-point and 6-rate multipoint configurations. All methods
+were evaluated across 1--1000~Mbps. Three findings:
 
 \begin{enumerate}
 \item \textbf{Representation shapes generalization.} Each
