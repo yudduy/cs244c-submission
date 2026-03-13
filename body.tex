@@ -213,9 +213,13 @@ same codebase for PPO.
 \subsubsection{Evolution loop}
 
 \begin{enumerate}
-\item \textbf{Seed population}: We initialize with 4 hand-written
-  Python policies: AIMD (loss-based), Copa (delay-based), a
-  rate-based pacer, and an adaptive hybrid.
+\item \textbf{Seed population}: We initialize with 5 hand-written
+  Python policies: AIMD (halve window when \texttt{rtt\_ratio} $> 2$),
+  Copa (target rate $= 1/(\delta \cdot q_{\text{delay}})$),
+  a BBR-like 8-phase gain cycle with bandwidth estimation,
+  a rate-based pacer (intersend $= 1/(\text{rec\_rate} \cdot \text{gain})$),
+  and a phase-based adaptive controller (startup/steady with
+  rate-ratio switching).
 
 \item \textbf{Mutation}: GPT-5.3-codex receives the parent
   policy's full source code, its per-rate fitness scores, and the
