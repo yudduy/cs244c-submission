@@ -139,22 +139,14 @@ on 6 rates).
 
 \subsubsection{Policy Representation}
 
-AlphaCC policies are functions with the signature:
-\begin{verbatim}
-def evolved_policy(obs) -> action
-\end{verbatim}
-where \texttt{obs} is Remy's Memory (4 EWMAs) and \texttt{action} is Remy's
-Action triple (window\_increment, window\_multiple, intersend). Policies can
-maintain state across calls via function attributes (e.g.,
-\texttt{evolved\_policy.phase}), enabling stateful behaviors like phase
-transitions and bandwidth estimation.
-
-
-Note that AlphaCC policies can maintain arbitrary state across calls via
-function attributes, which is additional representational power not available
-to Remy's stateless tree mapping or PPO's feedforward network. The
-statefulness ablation (\S\ref{sec:statefulness_ablation}) partially addresses this
-confound. For the main comparison (Figure~\ref{fig:cpp_gen}), we
+Each AlphaCC policy maps Remy's 4-EWMA observation to the same
+action triple (window increment, multiplier, intersend). Unlike
+Remy's stateless tree lookup or PPO's feedforward pass, AlphaCC
+policies can maintain persistent state across calls---enabling
+phase transitions, bandwidth estimation, and history-dependent
+decisions. The statefulness ablation
+(\S\ref{sec:statefulness_ablation}) partially addresses this confound.
+For the main comparison (Figure~\ref{fig:cpp_gen}), we
 hand-translated the best evolved policy to C++ as a new sender class
 in Remy's codebase, preserving the same state variables, thresholds,
 and control logic.
@@ -241,7 +233,7 @@ summarizes the results.
 
 \begin{table}[t]
 \centering
-\caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. IFS/Phase: mechanism presence. All 12 use rate-based pacing.}
+\caption{Diverse-seed results (12 runs, 4 families). $\Delta$ = run mean $-$ Remy mean. Won: rates where run beats Remy~1x out of 9. IFS: in-flight scaling (BDP-proportional window adjustment) present. All 12 use rate-based pacing.}
 \label{tab:diverse_seeds}
 \footnotesize
 \begin{tabular}{@{}llrrccc@{}}
@@ -262,15 +254,15 @@ aimd\_r1  & aimd     & $-$3.41 & $-$2.06 & 2/9 & \checkmark & -- \\
 copa\_r2  & copa     & $-$3.53 & $-$2.18 & 1/9 & \checkmark & -- \\
 \midrule
 \multicolumn{2}{l}{\textit{Family medians:}} \\
- & pacing   & $-$1.79 &  &  & 3/3 & 1/3 \\
- & constant & $-$2.15 &  &  & 3/3 & 0/3 \\
- & copa     & $-$3.04 &  &  & 3/3 & 0/3 \\
- & aimd     & $-$3.05 &  &  & 3/3 & 0/3 \\
+ & pacing   & $-$1.79 & -- & -- & 3/3 & 1/3 \\
+ & constant & $-$2.15 & -- & -- & 3/3 & 0/3 \\
+ & copa     & $-$3.04 & -- & -- & 3/3 & 0/3 \\
+ & aimd     & $-$3.05 & -- & -- & 3/3 & 0/3 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Key findings:}
+\paragraph{Key findings.}
 No systematic run beats Remy on the 9-rate mean. The best (pac\_r1,
 $-$1.40) approaches but does not surpass Remy ($-$1.35). The pacing family has the best median ($-$1.79, range 1.08), while AIMD
 has the worst median ($-$3.05) though the smallest range (0.90). Copa has the highest variance (range 2.12).
@@ -338,9 +330,9 @@ Coding was performed by one author post hoc; labels were not used
 during evolution.
 
 The four seed families encode different CCA architectures: the
-constant seed provides \emph{no} congestion-control structure (the LLM
-must invent everything), AIMD provides loss-based structure, and pacing
-provides rate-based structure. That all three converge on the same
+constant seed provides \emph{no} congestion-control structure,
+AIMD provides loss-based structure, Copa provides delay-based structure,
+and pacing provides rate-based structure. That all four converge on the same
 BDP-scaled pacing mechanism is consistent with the LLM's pre-trained
 knowledge of TCP biasing search toward this design. We cannot
 distinguish whether this reflects a genuine fitness-landscape attractor
@@ -349,16 +341,16 @@ or the LLM's inability to explore beyond familiar TCP templates.
 Figure~\ref{fig:mechanism} shows the core code excerpted from three
 policies evolved from different seed families. Despite different variable
 names, smoothing constants, and threshold values, the structural pattern
-is closely similar: estimate BDP from \texttt{min\_rtt / rec\_ewma}, scale
+is shared: estimate BDP from \texttt{min\_rtt / rec\_ewma}, scale
 window changes by $\sqrt{\text{BDP}}$, and pace sends at the
 estimated receive rate.
 
 The constant seed provides \emph{zero} congestion-control
-structure (increment=1, multiple=1.0, intersend=0), yet the LLM
-generated the BDP-scaling mechanism early in evolution. This is
-consistent with the LLM importing a familiar TCP-like template,
-after which evolution mainly tunes parameters and preserves useful
-structure.
+structure (increment=1, multiple=1.0, intersend=0), yet all three
+constant-seed runs produced BDP-scaling. One hypothesis is that the
+LLM's pre-trained familiarity with TCP biases it toward this template;
+we cannot distinguish this from a fitness-landscape attractor
+(\S\ref{sec:convergence}).
 
 \begin{figure}[t]
 \centering
@@ -382,7 +374,7 @@ bdp_scale = max(0.7, min(6.0, math.sqrt(bdp_pkts)))
 intersend = 1.0 / max(1e-6, target_rate)
 inc = max(1, int(1 + 1.4 * bdp_scale))
 \end{verbatim}
-\caption{Core mechanism from 3 seed families. All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. Core structure is shared.}
+\caption{Core mechanism excerpted from pre-translation prototype code (3 seed families). All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. The evaluated C++ sender class preserves this logic.}
 \label{fig:mechanism}
 \end{figure}
 
@@ -393,9 +385,8 @@ inc = max(1, int(1 + 1.4 * bdp_scale))
 
 
 Removing \texttt{intersend} (setting to 0) in the single-point best policy
-degrades score from $-$0.87 to $-$3.34. In this
-ablation, removing pacing eliminates most of the observed advantage over
-window-only baselines.
+degrades score from $-$0.87 to $-$3.34. For this policy,
+pacing accounts for most of the advantage over window-only baselines.
 
 \subsubsection{Statefulness Ablation}
 \label{sec:statefulness_ablation}
@@ -448,17 +439,16 @@ failure modes:
   degenerate regions in any run.
 \end{enumerate}
 
-These failure modes suggest that AlphaCC behaves as
-\emph{local search}---effective within an architecture, but unable to make the
-qualitative jumps needed when the initial architecture is wrong.
+These failure modes are consistent with local-search-like
+behavior---effective within an architecture, but in these runs unable to
+escape when the initial architecture is poorly suited.
 
 \subsubsection{Evolution Trajectory}
 
 Figure~\ref{fig:evolution} shows the trajectory across all 12
 diverse-seed runs (4~seed families $\times$ 3~repetitions). Most
 improvement occurs in the first 3~generations, with diminishing
-returns afterward. The global running best surpasses Remy's
-training-condition fitness by generation~2.
+returns afterward.
 
 \begin{figure}[tbp]
 \centering
@@ -473,8 +463,8 @@ training-condition fitness by generation~2.
 
 Figure~\ref{fig:rtt} shows performance for Copa, AIMD, BBR, and AlphaCC
 across 3 RTT values $\times$ 2 link rates (6 conditions).
-Remy and PPO are omitted because their C++ evaluator does not support
-RTT changes at evaluation time. Table~\ref{tab:rtt} reports the scores.
+Remy and PPO are omitted because our evaluation pipeline for those
+methods was configured for a fixed RTT only. Table~\ref{tab:rtt} reports the scores.
 
 \begin{figure}[tbp]
 \centering
@@ -547,8 +537,8 @@ A practical advantage of the source-code representation is human-readable output
 The best evolved policy uses named variables and clear control
 flow, whereas PPO uses opaque weights. AlphaCC's output
 can be inspected and debugged---enabling the mechanism analysis in
-\S\ref{sec:convergence} that would be substantially harder to extract
-from a neural network.
+\S\ref{sec:convergence} that would be harder to extract
+from a neural network, which exposes no named variables or explicit control flow.
 
 \subsection{Limitations}
 
@@ -622,8 +612,8 @@ all three were trained on a single condition
 \item \textbf{Mechanistic convergence.} Across 12~independent
   AlphaCC runs from 4~seed families, every evolved policy contains
   in-flight-proportional scaling and rate-based pacing (12/12).
-  This is consistent with the LLM's TCP prior biasing search,
-  though we cannot rule out a fitness-landscape attractor.
+  Whether this reflects the LLM's TCP prior or a fitness-landscape
+  attractor remains an open question (\S\ref{sec:convergence}).
 
 \item \textbf{Reliable mechanism discovery $\neq$ reliable
   performance.} AlphaCC's evolution is high-variance (means
