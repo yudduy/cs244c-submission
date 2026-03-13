@@ -1,5 +1,23 @@
 \section{Introduction}
 
+\begin{comment}
+TODO:
+- Finish abstract
+- Add table describing network conditions, similar to the table at the beginning of section 5.1 in the remy paper
+- Improve discussion
+
+- (Armaan) review related work
+- (Armaan) explain the PPO training setup
+- (Armaan) write PPO-specific analysis
+
+
+MAYBE TODO:
+- 
+- add 100x trained on 2014 conditions comparison to pretrained 100x remy CCA in another sanity check plot
+
+
+\end{comment}
+
 Remy~\cite{winstein2013tcp} demonstrated that computer-generated congestion
 control algorithms (CCAs) could outperform decades of human design within their
 training distribution. However, Remy's decision tree CCAs generalize poorly
@@ -34,6 +52,36 @@ scaling and rate-based pacing (12/12 runs). No AlphaCC run surpassed
 Remy on the aggregate mean, but AlphaCC degrades more gradually than
 Remy~1x at link rates far from training (Figure~\ref{fig:cpp_gen}).
 
+\section{Related Work}
+
+Remy~\cite{winstein2013tcp} pioneered automated CCA design with decision tree
+optimization. Sivaraman et al.~\cite{sivaraman2014experimental} studied its
+generalization, finding that trees trained on narrow ranges degrade on wider
+conditions while broader training ranges trade peak performance for
+robustness.
+
+Several deep RL approaches followed: PCC~\cite{dong2015pcc} used online
+learning for utility maximization; Aurora~\cite{jay2019deep} applied deep RL
+to congestion control; Yan et al.~\cite{yan2018pantheon} built the Pantheon
+benchmarking platform for systematic CCA comparison.
+These demonstrated that neural networks can learn congestion control but
+did not systematically compare generalization across representations on the
+same environments.
+
+CCAC~\cite{arun2021ccac} introduced formal CCA verification using
+SMT solvers. CCmatic~\cite{arun2024ccmatic} extended this to automated
+synthesis with formal guarantees, but only within a fixed
+window-adjustment template.
+
+AlphaEvolve~\cite{alphaevolve2025} demonstrated LLM-guided code
+evolution for mathematical optimization. Our approach adapts this
+paradigm to congestion control, using simulation-based fitness instead
+of mathematical verification.
+
+Copa~\cite{arun2018copa} and BBR~\cite{cardwell2017bbr} represent hand-designed
+CCAs that encode domain knowledge about delay-based and model-based congestion
+control, respectively.
+
 %% ====================================================================
 %% METHODS
 %% ====================================================================
@@ -63,7 +111,6 @@ S = \log_2\!\left(\frac{\text{throughput}}{\text{capacity}}\right) - \log_2\!\le
 This measures how close a CCA comes to fully utilizing the link (first term)
 while keeping delay near the propagation minimum (second term). A score of 0
 means perfect utilization with zero queuing delay.
-
 
 \paragraph{Evaluation protocol.}
 All results use Remy's original C++ simulator (\texttt{sender-runner}).
@@ -106,8 +153,11 @@ but differ along other axes (Table~\ref{tab:fairness}).
 \subsection{PPO: Deep Reinforcement Learning}
 \label{sec:ppo}
 
-% TODO(Armaan): Expand with architecture details, hyperparameters,
-% and analysis of PPO's strong generalization.
+For this class of CCAs, we consider a single neural network that is executed locally for each sender that, at a high level, maps local observations to a decision about when to send the next packet. The parameters of this neural network are identical for each sender and unchanged throughout a given simulation. The neural network takes as input the same thing as the Remy decision tree---specifically, exponential moving averages of the sending and receiving intervals as well as the RTT inflation. Also, identically to the Remy decision tree, the neural network has a discretized action space for each action dimension: the window increment, the window multiple, and the minimum time interval between sent packets (i.e., intersend).
+
+which takes in a four-dimensional input as previously described, nd which mirrors the Remy decision tree and outputs a 
+
+
 The network maps the same 4D observations to discretized actions via
 three categorical heads (257/101/56 classes for window\_increment,
 window\_multiple, and intersend respectively).
@@ -198,7 +248,7 @@ observed in~\cite{sivaraman2014experimental}.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/ppo_trajectory.png}
-\caption{PPO unnormalized utility over the course of training.}
+\caption{PPO unnormalized utility over the course of training (15 Mbps).}
 \label{fig:ppo_trajectory}
 \end{figure}
 
@@ -494,9 +544,7 @@ also the worst ($-$4.94 at 150~ms\,/\,59.8~Mbps)---a 4.56-unit swing.
 AIMD's range is 1.02 units across the same conditions.
 
 
-%% ====================================================================
-%% DISCUSSION AND RELATED WORK
-%% ====================================================================
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -505,7 +553,7 @@ AIMD's range is 1.02 units across the same conditions.
 \textbf{Representation shapes generalization profile.} Each
 representation degrades differently outside its training distribution.
 Remy~1x peaks near training (15~Mbps) and degrades sharply at
-both extremes---the finding of~\cite{sivaraman2014experimental}.
+both extremes, replicating the behavior found in ~\cite{sivaraman2014experimental}.
 AlphaCC's in-flight scaling adapts window increments to
 link capacity, producing more gradual degradation at high rates but
 losing near training where Remy's precise tree fit dominates.
@@ -556,35 +604,7 @@ interpretability work.
 \end{enumerate}
 
 
-\section{Related Work}
 
-Remy~\cite{winstein2013tcp} pioneered automated CCA design with decision tree
-optimization. Sivaraman et al.~\cite{sivaraman2014experimental} studied its
-generalization, finding that trees trained on narrow ranges degrade on wider
-conditions while broader training ranges trade peak performance for
-robustness.
-
-Several deep RL approaches followed: PCC~\cite{dong2015pcc} used online
-learning for utility maximization; Aurora~\cite{jay2019deep} applied deep RL
-to congestion control; Yan et al.~\cite{yan2018pantheon} built the Pantheon
-benchmarking platform for systematic CCA comparison.
-These demonstrated that neural networks can learn congestion control but
-did not systematically compare generalization across representations on the
-same environments.
-
-CCAC~\cite{arun2021ccac} introduced formal CCA verification using
-SMT solvers. CCmatic~\cite{arun2024ccmatic} extended this to automated
-synthesis with formal guarantees, but only within a fixed
-window-adjustment template.
-
-AlphaEvolve~\cite{alphaevolve2025} demonstrated LLM-guided code
-evolution for mathematical optimization. Our approach adapts this
-paradigm to congestion control, using simulation-based fitness instead
-of mathematical verification.
-
-Copa~\cite{arun2018copa} and BBR~\cite{cardwell2017bbr} represent hand-designed
-CCAs that encode domain knowledge about delay-based and model-based congestion
-control, respectively.
 
 
 \section{Conclusion}
