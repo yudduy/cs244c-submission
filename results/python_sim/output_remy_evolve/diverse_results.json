@@ -1,0 +1,52 @@
+[
+  {
+    "idx": 0,
+    "hint": "Use send_ewma and rec_ewma ratio for bandwidth est",
+    "score": -1.2699842909954648
+  },
+  {
+    "idx": 1,
+    "hint": "Implement slow start: grow cwnd by 2 per ack until",
+    "score": -5.162305608865182
+  },
+  {
+    "idx": 2,
+    "hint": "BBR-style: estimate bandwidth from 1/rec_ewma, set",
+    "score": -1.019108679704383
+  },
+  {
+    "idx": 3,
+    "hint": "Vegas-style: use the difference between expected r",
+    "score": -4.908425431902843
+  },
+  {
+    "idx": 4,
+    "hint": "Copa-style with velocity: if direction consistent ",
+    "score": -4.446341315052769
+  },
+  {
+    "idx": 5,
+    "hint": "Proportional control: adjustment proportional to (",
+    "score": -2.4585190204020186
+  },
+  {
+    "idx": 6,
+    "hint": "Hybrid: slow start phase with exponential growth, ",
+    "score": -3.617329149247548
+  },
+  {
+    "idx": 7,
+    "hint": "Rate-based: compute target_rate from bw estimate u",
+    "score": -1.9140983640794844
+  },
+  {
+    "idx": 8,
+    "hint": "Use all four signals: combine send rate, receive r",
+    "score": -2.521303275435723
+  },
+  {
+    "idx": 9,
+    "hint": "Adaptive threshold: start aggressive (inc=3), tran",
+    "score": -2.442404491982307
+  }
+]

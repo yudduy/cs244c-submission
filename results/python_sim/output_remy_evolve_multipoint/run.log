@@ -1,0 +1,169 @@
+=== Evaluating seed policies (multi-point) ===
+  Seed aimd: mean=-1.054
+       2.4 Mbps: -0.975
+       6.0 Mbps: -1.111
+      15.0 Mbps: -1.106
+      37.7 Mbps: -1.188
+      59.8 Mbps: -1.096
+      94.9 Mbps: -0.846
+  Seed copa: mean=-0.993
+       2.4 Mbps: -0.771
+       6.0 Mbps: -1.307
+      15.0 Mbps: -0.670
+      37.7 Mbps: -1.428
+      59.8 Mbps: -0.940
+      94.9 Mbps: -0.846
+  Seed adaptive: mean=-1.158
+       2.4 Mbps: -1.508
+       6.0 Mbps: -1.258
+      15.0 Mbps: -1.136
+      37.7 Mbps: -0.769
+      59.8 Mbps: -1.235
+      94.9 Mbps: -1.039
+  Seed bbr_like: mean=-1.751
+       2.4 Mbps: -1.833
+       6.0 Mbps: -2.768
+      15.0 Mbps: -1.041
+      37.7 Mbps: -1.124
+      59.8 Mbps: -2.015
+      94.9 Mbps: -1.726
+
+Best seed: mean=-0.993
+
+=== Generation 1/15 (multi-point) ===
+  Candidate 1/5... mean=-1.245 (worst=-1.947, best=-0.664)
+  Candidate 2/5... mean=-4.146 (worst=-5.510, best=-2.579)
+  Candidate 3/5... mean=-1.057 (worst=-1.442, best=-0.687)
+  Candidate 4/5... mean=-2.585 (worst=-3.702, best=-1.291)
+  Candidate 5/5... mean=-2.510 (worst=-4.642, best=-0.719)
+  Gen 1 best: -1.057, Overall best: -0.993
+
+=== Generation 2/15 (multi-point) ===
+  Candidate 1/5... mean=-2.143 (worst=-3.392, best=-1.205)
+  Candidate 2/5... mean=-1.119 (worst=-1.760, best=-0.708)
+  Candidate 3/5... mean=-1.091 (worst=-1.853, best=-0.850)
+  Candidate 4/5... mean=-0.453 (worst=-0.559, best=-0.313)
+    *** NEW BEST: -0.453 ***
+  Candidate 5/5... mean=-5.668 (worst=-6.984, best=-3.803)
+  Gen 2 best: -0.453, Overall best: -0.453
+
+=== Generation 3/15 (multi-point) ===
+  Candidate 1/5...   Compile rejected: policy doesn't grow cwnd (inc=0, mult=0.96)
+compile failed
+  Candidate 2/5... mean=-2.877 (worst=-4.296, best=-0.642)
+  Candidate 3/5... mean=-2.366 (worst=-3.549, best=-1.154)
+  Candidate 4/5...   Compile rejected: policy doesn't grow cwnd (inc=0, mult=0.9)
+compile failed
+  Candidate 5/5... mean=-5.658 (worst=-7.038, best=-3.494)
+  Gen 3 best: -2.366, Overall best: -0.453
+
+=== Generation 4/15 (multi-point) ===
+  Candidate 1/5... mean=-1.082 (worst=-1.571, best=-0.917)
+  Candidate 2/5... mean=-1.957 (worst=-3.648, best=-1.248)
+  Candidate 3/5... mean=-3.103 (worst=-4.942, best=-1.718)
+  Candidate 4/5... mean=-4.278 (worst=-5.927, best=-1.992)
+  Candidate 5/5... mean=-1.602 (worst=-3.445, best=-0.918)
+  Gen 4 best: -1.082, Overall best: -0.453
+
+=== Generation 5/15 (multi-point) ===
+  Candidate 1/5... mean=-4.186 (worst=-5.715, best=-1.734)
+  Candidate 2/5... mean=-3.717 (worst=-6.300, best=-1.677)
+  Candidate 3/5... mean=-1.248 (worst=-2.538, best=-0.780)
+  Candidate 4/5... mean=-0.807 (worst=-1.442, best=-0.456)
+  Candidate 5/5... mean=-2.712 (worst=-5.239, best=-0.477)
+  Gen 5 best: -0.807, Overall best: -0.453
+
+=== Generation 6/15 (multi-point) ===
+  Candidate 1/5... mean=-2.491 (worst=-4.332, best=-1.399)
+  Candidate 2/5... mean=-2.347 (worst=-5.632, best=-1.271)
+  Candidate 3/5... mean=-2.477 (worst=-4.886, best=-1.765)
+  Candidate 4/5... mean=-2.259 (worst=-6.048, best=-0.988)
+  Candidate 5/5... mean=-3.328 (worst=-5.843, best=-1.446)
+  Gen 6 best: -2.259, Overall best: -0.453
+
+=== Generation 7/15 (multi-point) ===
+  Candidate 1/5... mean=-3.064 (worst=-5.078, best=-0.916)
+  Candidate 2/5... mean=-0.921 (worst=-1.311, best=-0.594)
+  Candidate 3/5... mean=-0.788 (worst=-1.059, best=-0.370)
+  Candidate 4/5... mean=-1.057 (worst=-1.698, best=-0.426)
+  Candidate 5/5... mean=-1.188 (worst=-2.421, best=-0.524)
+  Gen 7 best: -0.788, Overall best: -0.453
+
+=== Generation 8/15 (multi-point) ===
+  Candidate 1/5... mean=-1.839 (worst=-3.056, best=-1.180)
+  Candidate 2/5... mean=-1.169 (worst=-1.800, best=-0.573)
+  Candidate 3/5... mean=-1.493 (worst=-2.782, best=-1.024)
+  Candidate 4/5... mean=-0.897 (worst=-1.706, best=-0.317)
+  Candidate 5/5... mean=-3.134 (worst=-4.909, best=-0.754)
+  Gen 8 best: -0.897, Overall best: -0.453
+
+=== Generation 9/15 (multi-point) ===
+  Candidate 1/5... mean=-4.191 (worst=-6.450, best=-1.975)
+  Candidate 2/5... mean=-1.526 (worst=-2.634, best=-1.099)
+  Candidate 3/5... mean=-3.447 (worst=-5.702, best=-1.373)
+  Candidate 4/5... mean=-1.914 (worst=-3.923, best=-0.793)
+  Candidate 5/5... mean=-3.445 (worst=-5.073, best=-0.814)
+  Gen 9 best: -1.526, Overall best: -0.453
+
+=== Generation 10/15 (multi-point) ===
+  Candidate 1/5... mean=-4.390 (worst=-6.183, best=-1.682)
+  Candidate 2/5... mean=-2.715 (worst=-3.822, best=-1.888)
+  Candidate 3/5... mean=-1.840 (worst=-3.473, best=-0.513)
+  Candidate 4/5... mean=-2.307 (worst=-3.877, best=-1.104)
+  Candidate 5/5... mean=-1.958 (worst=-3.501, best=-0.785)
+  Gen 10 best: -1.840, Overall best: -0.453
+
+=== Generation 11/15 (multi-point) ===
+  Candidate 1/5... mean=-4.465 (worst=-6.021, best=-1.908)
+  Candidate 2/5... mean=-3.601 (worst=-5.485, best=-1.247)
+  Candidate 3/5... mean=-4.727 (worst=-6.300, best=-2.007)
+  Candidate 4/5... mean=-3.122 (worst=-5.676, best=-1.261)
+  Candidate 5/5... mean=-3.090 (worst=-6.992, best=-1.173)
+  Gen 11 best: -3.090, Overall best: -0.453
+
+=== Generation 12/15 (multi-point) ===
+  Candidate 1/5... mean=-4.539 (worst=-6.281, best=-2.617)
+  Candidate 2/5... mean=-1.732 (worst=-2.566, best=-1.051)
+  Candidate 3/5... mean=-1.461 (worst=-1.877, best=-0.924)
+  Candidate 4/5... mean=-4.183 (worst=-6.914, best=-2.327)
+  Candidate 5/5... mean=-2.679 (worst=-4.386, best=-1.356)
+  Gen 12 best: -1.461, Overall best: -0.453
+
+=== Generation 13/15 (multi-point) ===
+  Candidate 1/5... mean=-1.498 (worst=-3.606, best=-0.152)
+  Candidate 2/5... mean=-3.665 (worst=-5.205, best=-1.667)
+  Candidate 3/5... mean=-0.789 (worst=-1.812, best=-0.290)
+  Candidate 4/5... mean=-4.312 (worst=-5.887, best=-2.617)
+  Candidate 5/5... mean=-1.017 (worst=-1.290, best=-0.797)
+  Gen 13 best: -0.789, Overall best: -0.453
+
+=== Generation 14/15 (multi-point) ===
+  Candidate 1/5... mean=-1.094 (worst=-1.319, best=-0.889)
+  Candidate 2/5... mean=-2.219 (worst=-4.113, best=-1.195)
+  Candidate 3/5... mean=-3.650 (worst=-5.192, best=-1.831)
+  Candidate 4/5... mean=-0.750 (worst=-0.995, best=-0.454)
+  Candidate 5/5... mean=-1.706 (worst=-2.478, best=-0.733)
+  Gen 14 best: -0.750, Overall best: -0.453
+
+=== Generation 15/15 (multi-point) ===
+  Candidate 1/5... mean=-1.042 (worst=-1.404, best=-0.757)
+  Candidate 2/5... mean=-1.301 (worst=-2.255, best=-0.753)
+  Candidate 3/5... mean=-1.292 (worst=-2.014, best=-0.693)
+  Candidate 4/5... mean=-1.544 (worst=-2.281, best=-1.049)
+  Candidate 5/5... mean=-1.329 (worst=-1.908, best=-0.677)
+  Gen 15 best: -1.042, Overall best: -0.453
+
+=== Full Generalization Evaluation (9 link rates) ===
+     2.4 Mbps: -0.538
+     3.8 Mbps: -0.614
+     6.0 Mbps: -0.562
+     9.5 Mbps: -1.213
+    15.0 Mbps: -0.765
+    23.8 Mbps: -0.755
+    37.7 Mbps: -0.994
+    59.8 Mbps: -0.577
+    94.9 Mbps: -0.838
+
+=== DONE ===
+Best mean normalized: -0.453
+Output: output_remy_evolve_multipoint/
