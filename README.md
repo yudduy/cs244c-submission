@@ -3,9 +3,9 @@
 This repository contains both codepaths used in the CS244C project:
 
 - `remy/`: the C++ Remy codebase plus the PPO neural-policy trainer and evaluator.
-- `alphacc/`: the project-specific AlphaCC stack for LLM-guided mutation of Python congestion-control policies.
+- `alphacc/`: Stack for LLM-guided mutation of Python congestion-control policies.
 
-`alphacc` here is not just OpenEvolve copied over. The retained AlphaCC implementation is:
+`alphacc` running requires OpenEvolve (https://github.com/algorithmicsuperintelligence/openevolve) copied over and integrating. The retained AlphaCC implementation is:
 
 - `alphacc/evolve_remy.py`: mutation loop, seed policies, prompt wiring, and run orchestration.
 - `alphacc/remy_eval.py`: Remy-compatible event-driven simulator and baseline policies.
@@ -94,21 +94,3 @@ presentation figures into `paper/figures/`.
 - `results/cpp_sim/` contains preserved raw C++ evaluation outputs for Remy, PPO, and the AlphaCC export.
 - `results/python_sim/` contains preserved AlphaCC runs and auxiliary Python-simulator outputs.
 - Cross-method comparison is qualitative: Remy/PPO artifacts come from C++, while AlphaCC was evolved in the Python reimplementation.
-
-## Building The Paper
-
-```bash
-cd paper
-make
-```
-
-## Layout
-
-```text
-cs244c-submission/
-├── alphacc/
-├── remy/
-├── results/
-├── scripts/
-└── paper/
-```
