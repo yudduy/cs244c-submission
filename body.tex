@@ -9,6 +9,7 @@ TODO:
 - (Armaan) review related work
 - (Armaan) explain the PPO training setup
 - (Armaan) write PPO-specific analysis
+- (Armaan) add table with PPO configuration
 
 
 MAYBE TODO:
@@ -182,8 +183,72 @@ $a^k \sim \text{Categorical}(\pi(a^k_1), \ldots, \pi(a^k_{N_k}))$ is sampled
 independently for each dimension $k$, selecting a specific discretized value for
 the window increment, window multiple, and minimum intersend.
 
-\subsubsection{bla}
+\subsubsection{Training}
 
+To learn the parameters of our neural network, we use proximal policy
+optimization, which is a member of a broader class of policy gradient methods.
+Abstractly, in this process, at every training iteration, the single current
+neural network is loaded into all senders in a fixed number of simulations
+(i.e., rollouts), and the final utility is recorded for each rollout. Because
+actions are sampled from a distribution defined by our network at a given input,
+this will naturally yield diversity in actions at each input that can be used to
+generate a gradient signal. Then, the parameters of the network are updated by
+slightly increasing the probability of actions in rollouts with a final utility
+that is greater than the mean utility across all rollouts in the current
+iteration and decreasing the probability of actions in rollouts with a utility
+less than the mean. Because the entire domain of the action distribution is
+defined by the policy network, we can increase the probability of sampling an
+action from our policy network in a fully differentiable way by increasing the
+element of the score vector, $z_{k,i}$, corresponding to that action and
+decreasing all other elements of $\mathbf{z_k}$ along the same action dimension.
+This process of upweighting and downweighting actions is applied equally to all
+senders in each rollout based on the aggregate final utility of the rollout.
+
+During each rollout, every sender records its experience as a sequence of
+events, where each event consists of an observation, the sampled action, the
+log-probability of that action under the current policy, and the final utility
+of the rollout. We assume the joint probability over actions factorizes across the three
+dimensions, so the joint log-probability is
+$\log \pi(a \mid s) = \sum_k \log \pi(a^k \mid s)$.
+
+To compute the update, a batch of events is sampled uniformly from the
+experience collected in the current iteration. An ``advantage'' $\hat{A}_i$ for
+each event is obtained by normalizing the associated utility to zero mean and
+unit variance across the batch. For each sampled event, the network is evaluated
+on the recorded observation to produce new log-probabilities for the actions
+that were taken. The probability ratio between the new and old policies,
+$r_i = \exp(\log \pi_{\theta}(a \mid s) - \log \pi_{\theta_{\text{old}}}(a \mid s))$,
+is used to define the PPO clipped surrogate loss:
+%
+\begin{equation}
+  L^{\text{PPO}}_i = -\min\bigl(r_i \hat{A}_i,\; \text{clip}(r_i,\, 1{-}\epsilon,\, 1{+}\epsilon)\, \hat{A}_i\bigr),
+\end{equation}
+%
+where $\epsilon$ is the clipping threshold. An entropy bonus for each event is
+computed as the sum of the entropies of the three categorical distributions:
+%
+\begin{equation}
+  L^{\text{ent}}_i = \sum_k H\!\bigl(\pi(\cdot \mid s_i; k)\bigr).
+\end{equation}
+%
+Each event is assigned a weight $w_i$ equal to the average number of events
+across the batch divided by the total number of events across all senders in the
+rollout that event was sampled from.
+The overall loss, minimized over the batch, is:
+%
+\begin{equation}
+  L = \frac{1}{B} \sum_{i=1}^{B} w_i \bigl( L^{\text{PPO}}_i - \alpha\, L^{\text{ent}}_i \bigr),
+\end{equation}
+%
+where $\alpha$ is the entropy coefficient. This is minimized using AdamW, with
+gradients accumulated over multiple mini-batches before each optimizer step, and
+the process is repeated for a fixed number of iterations per batch of collected
+experience.
+
+
+
+%% - discuss why we divide by the number of events
+%% - discuss input normalization
 
 \subsection{AlphaCC: LLM-Guided Code Evolution}
 \label{sec:alphacc}
@@ -277,7 +342,7 @@ policy was hand-translated to C++ for this evaluation (\S\ref{sec:alphacc}).
 \centering
 \includegraphics[width=\columnwidth]{figures/link_sweep_ppt.png}
 \caption{
-CCAs from all three CCA learning schemes evaluated in Remy's C++ simulator. Link ranges used in training are specified by horizontal bars (or vertical lines for single rate training) above the plot. 
+CCAs from all three CCA learning schemes evaluated in Remy's C++ simulator. Link ranges used in training are specified by horizontal bars (or vertical lines for single rate training) above. 
 }
 \label{fig:cpp_gen}
 \end{figure}
@@ -295,7 +360,7 @@ observed in~\cite{sivaraman2014experimental}.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/PPO_temp_sweep.png}
-\caption{PPO CCA performance across link rates vs sampling temperature, which tunes the sharpness (entropy) of the policy's action distribution. Higher temperature means higher entropy.}
+\caption{PPO CCA performance across link rates vs sampling temperature. Higher temperature means higher entropy of action distribution.}
 \label{fig:ppo_temp_sweep}
 \end{figure}
 
