@@ -253,75 +253,70 @@ experience.
 \subsection{AlphaCC: LLM-Guided Code Evolution}
 \label{sec:alphacc}
 
-We cloned OpenEvolve, an open-source reimplementation of
-AlphaEvolve~\cite{alphaevolve2025}, and pointed it at Remy's
-\texttt{sender-runner} as the evaluation oracle. Each candidate
-is a Python function \texttt{evolved\_policy(memory) -> action}
-that accepts Remy's 4-EWMA observation and returns the same
-action triple. Unlike Remy's stateless tree lookup or PPO's
-feedforward pass, policies can maintain persistent state across
-calls via function attributes (e.g., phase variables, bandwidth
-estimates). The statefulness ablation
-(\S\ref{sec:statefulness_ablation}) addresses this confound.
+For our AlphaCC agent, we consider an evolutionary process that operates
+directly on the source code of a congestion control policy. We use
+OpenEvolve, an open-source reimplementation of
+AlphaEvolve~\cite{alphaevolve2025}, with Remy's \texttt{sender-runner}
+as the evaluation oracle. Each candidate in the population is a Python
+function, \texttt{evolved\_policy(memory)}, that maps the same
+four-dimensional EWMA observation used by Remy and PPO to the same
+action triple. Unlike the stateless lookup of the Remy tree or the
+feedforward pass of the PPO network, these functions can maintain
+persistent state across invocations via function attributes (e.g.,
+phase variables, bandwidth estimates). We analyze the impact of this
+additional capability in \S\ref{sec:statefulness_ablation}.
 
 \subsubsection{Slotting AlphaCC into the Remy codebase}
 
-We implemented \texttt{AlphaCCRat}, a subclass of the existing
-\texttt{Rat} class, that overrides the decision-making method
-with the evolved policy logic. The translation from Python to
-C++ is automated--GPT-5.3-codex receives the Python policy and a
-fixed prompt describing the \texttt{Rat} class interface, and
-produces a compilable C++ subclass. Compilation failure triggers
-re-translation (up to 3 retries). This mirrors how \texttt{NeuralRat} slots into the
-same codebase for PPO.
+We implemented a new \texttt{AlphaCCRat} class as a subclass of the
+existing \texttt{Rat} class. This mirrors the integration of the
+\texttt{NeuralRat} for PPO: the subclass inherits the same
+packet-sending logic, memory tracking, and simulation interface, and
+overrides only the method that maps the current memory state to window
+increment, window multiple, and intersend values. To run an evolved
+Python policy within the C++ simulation, we automate its translation:
+a fixed prompt provides GPT-5.3-codex with the Python source code and
+the C++ \texttt{Rat} class interface, from which it generates a
+compilable C++ subclass. If the generated code fails to compile, the
+translation is retried up to three times before the candidate is
+rejected.
 
 \subsubsection{Evolution loop}
 
-\begin{enumerate}
-\item \textbf{Seed population}: We initialize with 5 hand-written
-  Python policies covering loss-based (AIMD), delay-based
-  (Copa~\cite{arun2018copa}), and rate-based
-  (BBR-inspired~\cite{cardwell2017bbr}) mechanism families.
+The evolutionary process begins with a population of five hand-written
+Python policies representing loss-based
+(AIMD), delay-based (Copa~\cite{arun2018copa}), and rate-based
+(BBR-inspired~\cite{cardwell2017bbr}) control families. In each of
+15 generations, five parent policies are selected for mutation---either
+by exploiting the highest-fitness candidate in the archive or by
+choosing one at random. The full source code of each parent, its
+fitness scores, and the source of other high-performing policies are
+provided to GPT-5.3-codex, which returns a complete modified Python
+function.
 
-\item \textbf{Mutation}: GPT-5.3-codex receives the parent
-  policy's full source code, its per-rate fitness scores, and the
-  top-3 policies from the archive. The prompt instructs the LLM
-  to return a complete replacement function (not a diff)
-  preserving the \texttt{evolved\_policy(memory)} signature.
-
-\item \textbf{Sanity check}: Before spending simulation budget,
-  each candidate is executed on a synthetic 10-call observation
-  sequence with decreasing \texttt{rtt\_ratio} (simulating no
-  congestion). If the policy never increases the window during
-  these calls, it is rejected as degenerate.
-
-\item \textbf{Evaluation}: Surviving candidates are translated
-  to C++ (\texttt{AlphaCCRat}), compiled into
-  \texttt{sender-runner}, and evaluated on the training condition
-  (15~Mbps, 150~ms RTT, 2 senders, 100s). Fitness is the
-  normalized score $S$ averaged over 10 random seeds.
-
-\item \textbf{Selection}: Parents are chosen 50\% by exploitation
-  (highest fitness in archive) and 50\% by exploration (uniform
-  random). The archive retains all candidates that improve on
-  their parent.
-\end{enumerate}
-
-We run 15 generations with 5 candidates per generation (75 total
-evaluations).
+Before evaluation, each new candidate undergoes a preliminary check:
+it is executed on a synthetic 10-call observation sequence with
+decreasing \texttt{rtt\_ratio}. If the policy never increases its
+window during these calls, it is rejected as degenerate. Candidates
+that pass this check are translated to C++, compiled, and evaluated
+in the \texttt{sender-runner} on the training condition (15~Mbps,
+150~ms RTT, 2 senders, 100~s) over 10 random seeds. A candidate is
+added to the archive if its average normalized score $S$ improves
+upon its parent's. The full process comprises 75 evaluations.
 
 \subsubsection{Multipoint training}
 
-In single-point training, the LLM receives only one fitness
-score---a scalar with no information about where or why the
-policy fails. To test whether denser feedback helps the LLM
-produce more robust policies, we extended the evaluation to 6
-link rates (matching Remy~10$\times$'s training range). Each
-candidate now receives per-rate scores in the mutation prompt,
-giving the LLM a signal about which network conditions cause
-degradation. We pair this with the diverse-seed study
-(\S\ref{sec:diverse_seeds}) to test both richer feedback and
-initialization robustness.
+In the baseline configuration, each candidate receives a single
+fitness score derived from one network condition. This provides the
+LLM with a scalar signal but no information about how the policy
+behaves across different link rates. To provide a richer feedback
+signal, we also evaluate a multipoint configuration in which each
+candidate is tested across six link rates spanning the
+Remy~10$\times$ training range. The resulting vector of per-rate
+scores is included in the mutation prompt, giving the LLM a signal
+about which conditions cause degradation. We study this richer
+feedback mechanism alongside a diverse set of initial seeds in
+\S\ref{sec:diverse_seeds}.
 
 
 %% ====================================================================
