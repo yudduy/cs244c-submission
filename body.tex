@@ -287,12 +287,12 @@ The evolutionary process begins with a population of five hand-written
 Python policies representing loss-based
 (AIMD), delay-based (Copa~\cite{arun2018copa}), and rate-based
 (BBR-inspired~\cite{cardwell2017bbr}) control families. In each of
-15 generations, five parent policies are selected for mutation---either
-by exploiting the highest-fitness candidate in the archive or by
-choosing one at random. The full source code of each parent, its
-fitness scores, and the source of other high-performing policies are
-provided to GPT-5.3-codex, which returns a complete modified Python
-function.
+15 generations, five new candidates are produced. For each, a parent
+is selected from the archive---either the highest-fitness policy
+(exploitation) or a random member (exploration). The full source code
+of the parent, its fitness scores, and the source of other
+high-performing policies are provided to GPT-5.3-codex, which returns
+a complete modified Python function.
 
 Before evaluation, each new candidate undergoes a preliminary check:
 it is executed on a synthetic 10-call observation sequence with
