@@ -76,7 +76,7 @@ evolution for mathematical optimization. Our approach adapts this
 paradigm to congestion control, using simulation-based fitness instead
 of mathematical verification.
 
-Copa~\cite{arun2018copa} and BBR~\cite{cardwell2017bbr} represent hand-designed CCAs that encode domain knowledge about delay-based and model-based congestioncontrol, respectively.
+Copa~\cite{arun2018copa} and BBR~\cite{cardwell2017bbr} represent hand-designed CCAs that encode domain knowledge about delay-based and model-based congestion control, respectively.
 
 %% ====================================================================
 %% METHODS
@@ -331,7 +331,7 @@ feedback mechanism alongside a diverse set of initial seeds in
 Figure~\ref{fig:cpp_gen} shows the normalized score for all three
 representations evaluated in Remy's C++ simulator across 99
 log-spaced link rates from 1--1000~Mbps. AlphaCC's best single-point
-policy was hand-translated to C++ for this evaluation (\S\ref{sec:alphacc}).
+policy was automatically translated to C++ for this evaluation (\S\ref{sec:alphacc}).
 
 \begin{figure}[t]
 \centering
@@ -384,14 +384,14 @@ To test whether AlphaCC's key mechanisms are robust to initialization,
 we ran 12 independent evolutions from four structurally different seed
 families:
 \begin{itemize}
-\item \textbf{Constant}: minimal seed (increment=1, multiple=1.0,
-  intersend=0). The seed code itself contains no congestion-control logic.
-\item \textbf{AIMD}: additive-increase multiplicative-decrease with
-  basic RTT-ratio thresholds. Classical loss-based structure.
-\item \textbf{Copa}: delay-based seed using RTT-ratio thresholds.
-  Increase when below target, decrease when above.
-\item \textbf{Pacing}: rate-based seed using \texttt{rec\_ewma} for
-  bandwidth estimation and explicit intersend pacing.
+\item \textbf{Constant}: minimal seed (increment${}={}$1, multiple${}={}$1.0,
+  intersend${}={}$0). Contains no congestion-control logic.
+\item \textbf{AIMD}: loss-based; additive increase, multiplicative
+  decrease on RTT-ratio threshold.
+\item \textbf{Copa}: delay-based; adjusts window toward target rate
+  $1/(\delta \cdot q_{\text{delay}})$.
+\item \textbf{Pacing}: rate-based; sets intersend from the
+  receive-rate EWMA with a gain cycle.
 \end{itemize}
 Each seed was run 3 times independently (different random seeds),
 yielding 12 total evolution trajectories. Table~\ref{tab:diverse_seeds}
@@ -534,7 +534,7 @@ bdp_scale = max(0.7, min(6.0, math.sqrt(bdp_pkts)))
 intersend = 1.0 / max(1e-6, target_rate)
 inc = max(1, int(1 + 1.4 * bdp_scale))
 \end{verbatim}
-\caption{Core mechanism excerpted from pre-translation prototype code (3 seed families). All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. The evaluated C++ sender class preserves this logic.}
+\caption{Core mechanism excerpted from evolved Python policies (3 seed families). All compute BDP from min\_rtt/rec\_ewma and pace from receive rate. The C++ translation preserves this logic.}
 \label{fig:mechanism}
 \end{figure}
 
@@ -599,9 +599,9 @@ failure modes:
   degenerate regions in any run.
 \end{enumerate}
 
-These failure modes are consistent with local-search-like
-behavior---effective within an architecture, but in these runs unable to
-escape when the initial architecture is poorly suited.
+These failure modes are consistent with local search:
+effective within an architecture, but unable to escape when the
+initial structure is poorly suited.
 
 \subsubsection{Evolution Trajectory}
 
@@ -664,13 +664,12 @@ AIMD's range is 1.02 units across the same conditions.
 
 \subsection{What the Comparison Shows}
 
-\textbf{Representation shapes generalization profile.} Each
-representation degrades differently outside its training distribution.
+\textbf{Representation shapes generalization profile.}
 Remy~1x peaks near training (15~Mbps) and degrades sharply at
-both extremes, replicating the behavior found in ~\cite{sivaraman2014experimental}.
+both extremes, replicating~\cite{sivaraman2014experimental}.
 AlphaCC's in-flight scaling adapts window increments to
 link capacity, producing more gradual degradation at high rates but
-losing near training where Remy's precise tree fit dominates.
+losing near training where Remy's tree fit dominates.
 
 \textbf{No method dominates everywhere.} Each representation has
 a region where it performs best (Figure~\ref{fig:cpp_gen}).
@@ -703,8 +702,9 @@ interpretability work.
   reflect its training setup; further hyperparameter tuning could change
   its relative standing.
 \item \textbf{Evolution environment}: AlphaCC policies are evolved
-  as source code and hand-translated to C++ for evaluation. Translation
-  errors could affect results, though 38/38 unit tests passed.
+  as Python source code and automatically translated to C++ by
+  GPT-5.3-codex for evaluation. Translation errors could affect
+  results, though compilation is verified and sanity-checked.
 \item \textbf{LLM prior vs.\ discovery}: The 12/12 convergence on BDP scaling
   could reflect either (a)~rediscovery of a genuine attractor in the fitness
   landscape or (b)~the LLM's inability to explore beyond familiar TCP
