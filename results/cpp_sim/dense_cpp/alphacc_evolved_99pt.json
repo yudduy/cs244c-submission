@@ -1,0 +1,1812 @@
+{
+  "metadata": {
+    "sender_runner": "/Users/duy/Documents/build/cs244c-submission-repo/remy/src/evolved-runner",
+    "grid": {
+      "link_ppt_lo": 0.1,
+      "link_ppt_hi": 100.0,
+      "num_points": 99
+    },
+    "rtt_ms": 150.0,
+    "num_senders": 2,
+    "mean_on_ms": 1000.0,
+    "mean_off_ms": 1000.0,
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "num_seeds": 10,
+    "timeout_s": 300.0
+  },
+  "results": [
+    {
+      "link_ppt": 0.1,
+      "link_mbps": 1.0,
+      "status": "ok",
+      "normalized_score_raw": -3.9564929999999996,
+      "normalized_score_per_sender": -1.9782464999999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.439232,
+          "delay_ratio": 1.719272
+        },
+        {
+          "throughput_ratio": 0.427353,
+          "delay_ratio": 1.715827
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.10730309405261562,
+      "link_mbps": 1.0730309405261562,
+      "status": "ok",
+      "normalized_score_raw": -3.9663215999999997,
+      "normalized_score_per_sender": -1.9831607999999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.420359,
+          "delay_ratio": 1.66974
+        },
+        {
+          "throughput_ratio": 0.436495,
+          "delay_ratio": 1.688945
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.11513953993264475,
+      "link_mbps": 1.1513953993264474,
+      "status": "ok",
+      "normalized_score_raw": -4.0237756000000005,
+      "normalized_score_per_sender": -2.0118878000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.431564,
+          "delay_ratio": 1.685032
+        },
+        {
+          "throughput_ratio": 0.395695,
+          "delay_ratio": 1.679545
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.1235482888256747,
+      "link_mbps": 1.235482888256747,
+      "status": "ok",
+      "normalized_score_raw": -4.0929474,
+      "normalized_score_per_sender": -2.0464737,
+      "senders": [
+        {
+          "throughput_ratio": 0.427765,
+          "delay_ratio": 1.724311
+        },
+        {
+          "throughput_ratio": 0.398042,
+          "delay_ratio": 1.708698
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.13257113655901093,
+      "link_mbps": 1.3257113655901094,
+      "status": "ok",
+      "normalized_score_raw": -4.182478399999999,
+      "normalized_score_per_sender": -2.0912391999999995,
+      "senders": [
+        {
+          "throughput_ratio": 0.399118,
+          "delay_ratio": 1.714866
+        },
+        {
+          "throughput_ratio": 0.394343,
+          "delay_ratio": 1.718643
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.14225293134853698,
+      "link_mbps": 1.4225293134853698,
+      "status": "ok",
+      "normalized_score_raw": -4.154702,
+      "normalized_score_per_sender": -2.077351,
+      "senders": [
+        {
+          "throughput_ratio": 0.383016,
+          "delay_ratio": 1.655567
+        },
+        {
+          "throughput_ratio": 0.382203,
+          "delay_ratio": 1.647981
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.15264179671752334,
+      "link_mbps": 1.5264179671752334,
+      "status": "ok",
+      "normalized_score_raw": -4.2309425,
+      "normalized_score_per_sender": -2.11547125,
+      "senders": [
+        {
+          "throughput_ratio": 0.36647,
+          "delay_ratio": 1.638304
+        },
+        {
+          "throughput_ratio": 0.369719,
+          "delay_ratio": 1.634971
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.16378937069540642,
+      "link_mbps": 1.6378937069540642,
+      "status": "ok",
+      "normalized_score_raw": -4.262459300000001,
+      "normalized_score_per_sender": -2.1312296500000003,
+      "senders": [
+        {
+          "throughput_ratio": 0.375363,
+          "delay_ratio": 1.62371
+        },
+        {
+          "throughput_ratio": 0.36192,
+          "delay_ratio": 1.630543
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.1757510624854792,
+      "link_mbps": 1.757510624854792,
+      "status": "ok",
+      "normalized_score_raw": -4.3011987000000005,
+      "normalized_score_per_sender": -2.1505993500000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.360996,
+          "delay_ratio": 1.576719
+        },
+        {
+          "throughput_ratio": 0.377579,
+          "delay_ratio": 1.584225
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.188586327877265,
+      "link_mbps": 1.8858632787726501,
+      "status": "ok",
+      "normalized_score_raw": -4.2768242,
+      "normalized_score_per_sender": -2.1384121,
+      "senders": [
+        {
+          "throughput_ratio": 0.356788,
+          "delay_ratio": 1.531135
+        },
+        {
+          "throughput_ratio": 0.357556,
+          "delay_ratio": 1.530184
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.2023589647725157,
+      "link_mbps": 2.023589647725157,
+      "status": "ok",
+      "normalized_score_raw": -4.2413954,
+      "normalized_score_per_sender": -2.1206977,
+      "senders": [
+        {
+          "throughput_ratio": 0.352956,
+          "delay_ratio": 1.505892
+        },
+        {
+          "throughput_ratio": 0.334238,
+          "delay_ratio": 1.510271
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.21713743029375185,
+      "link_mbps": 2.1713743029375183,
+      "status": "ok",
+      "normalized_score_raw": -3.0582974,
+      "normalized_score_per_sender": -1.5291487,
+      "senders": [
+        {
+          "throughput_ratio": 0.460694,
+          "delay_ratio": 1.428959
+        },
+        {
+          "throughput_ratio": 0.527408,
+          "delay_ratio": 1.419396
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.23299518105153721,
+      "link_mbps": 2.329951810515372,
+      "status": "ok",
+      "normalized_score_raw": -4.2134811999999995,
+      "normalized_score_per_sender": -2.1067405999999997,
+      "senders": [
+        {
+          "throughput_ratio": 0.360985,
+          "delay_ratio": 1.445546
+        },
+        {
+          "throughput_ratio": 0.317115,
+          "delay_ratio": 1.461748
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.250011038261793,
+      "link_mbps": 2.50011038261793,
+      "status": "ok",
+      "normalized_score_raw": -2.8376994000000004,
+      "normalized_score_per_sender": -1.4188497000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.49628,
+          "delay_ratio": 1.384912
+        },
+        {
+          "throughput_ratio": 0.496209,
+          "delay_ratio": 1.37237
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.26826957952797253,
+      "link_mbps": 2.6826957952797255,
+      "status": "ok",
+      "normalized_score_raw": -3.4709634,
+      "normalized_score_per_sender": -1.7354817,
+      "senders": [
+        {
+          "throughput_ratio": 0.438494,
+          "delay_ratio": 1.391132
+        },
+        {
+          "throughput_ratio": 0.417068,
+          "delay_ratio": 1.394498
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.2878615592354569,
+      "link_mbps": 2.8786155923545693,
+      "status": "ok",
+      "normalized_score_raw": -3.2825655000000005,
+      "normalized_score_per_sender": -1.6412827500000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.436468,
+          "delay_ratio": 1.373048
+        },
+        {
+          "throughput_ratio": 0.441907,
+          "delay_ratio": 1.390452
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.3088843596477481,
+      "link_mbps": 3.0888435964774805,
+      "status": "ok",
+      "normalized_score_raw": -3.1391060000000004,
+      "normalized_score_per_sender": -1.5695530000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.433794,
+          "delay_ratio": 1.343813
+        },
+        {
+          "throughput_ratio": 0.425721,
+          "delay_ratio": 1.351677
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.33144247494664264,
+      "link_mbps": 3.3144247494664265,
+      "status": "ok",
+      "normalized_score_raw": -3.0507318999999997,
+      "normalized_score_per_sender": -1.5253659499999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.472763,
+          "delay_ratio": 1.322122
+        },
+        {
+          "throughput_ratio": 0.465167,
+          "delay_ratio": 1.322793
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.3556480306223129,
+      "link_mbps": 3.556480306223129,
+      "status": "ok",
+      "normalized_score_raw": -2.4325699,
+      "normalized_score_per_sender": -1.21628495,
+      "senders": [
+        {
+          "throughput_ratio": 0.534295,
+          "delay_ratio": 1.304739
+        },
+        {
+          "throughput_ratio": 0.548093,
+          "delay_ratio": 1.325462
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.3816213407949356,
+      "link_mbps": 3.816213407949356,
+      "status": "ok",
+      "normalized_score_raw": -2.3949521999999996,
+      "normalized_score_per_sender": -1.1974760999999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.550884,
+          "delay_ratio": 1.270727
+        },
+        {
+          "throughput_ratio": 0.561242,
+          "delay_ratio": 1.277017
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.4094915062380426,
+      "link_mbps": 4.094915062380426,
+      "status": "ok",
+      "normalized_score_raw": -2.3375734000000006,
+      "normalized_score_per_sender": -1.1687867000000003,
+      "senders": [
+        {
+          "throughput_ratio": 0.538617,
+          "delay_ratio": 1.24008
+        },
+        {
+          "throughput_ratio": 0.590295,
+          "delay_ratio": 1.245046
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.43939705607607915,
+      "link_mbps": 4.393970560760792,
+      "status": "ok",
+      "normalized_score_raw": -2.3252606,
+      "normalized_score_per_sender": -1.1626303,
+      "senders": [
+        {
+          "throughput_ratio": 0.540845,
+          "delay_ratio": 1.214468
+        },
+        {
+          "throughput_ratio": 0.523531,
+          "delay_ratio": 1.209479
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.4714866363457394,
+      "link_mbps": 4.714866363457394,
+      "status": "ok",
+      "normalized_score_raw": -2.2925302,
+      "normalized_score_per_sender": -1.1462651,
+      "senders": [
+        {
+          "throughput_ratio": 0.545758,
+          "delay_ratio": 1.18982
+        },
+        {
+          "throughput_ratio": 0.541693,
+          "delay_ratio": 1.189046
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.5059197488435826,
+      "link_mbps": 5.059197488435826,
+      "status": "ok",
+      "normalized_score_raw": -2.3571454,
+      "normalized_score_per_sender": -1.1785727,
+      "senders": [
+        {
+          "throughput_ratio": 0.523861,
+          "delay_ratio": 1.189514
+        },
+        {
+          "throughput_ratio": 0.517744,
+          "delay_ratio": 1.194586
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.542867543932386,
+      "link_mbps": 5.42867543932386,
+      "status": "ok",
+      "normalized_score_raw": -2.3525983,
+      "normalized_score_per_sender": -1.17629915,
+      "senders": [
+        {
+          "throughput_ratio": 0.518934,
+          "delay_ratio": 1.163772
+        },
+        {
+          "throughput_ratio": 0.550514,
+          "delay_ratio": 1.170967
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.5825136712468927,
+      "link_mbps": 5.825136712468927,
+      "status": "ok",
+      "normalized_score_raw": -2.3394122,
+      "normalized_score_per_sender": -1.1697061,
+      "senders": [
+        {
+          "throughput_ratio": 0.556642,
+          "delay_ratio": 1.167536
+        },
+        {
+          "throughput_ratio": 0.512176,
+          "delay_ratio": 1.170342
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.6250551925273974,
+      "link_mbps": 6.250551925273974,
+      "status": "ok",
+      "normalized_score_raw": -2.3386721999999995,
+      "normalized_score_per_sender": -1.1693360999999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.52476,
+          "delay_ratio": 1.154107
+        },
+        {
+          "throughput_ratio": 0.520848,
+          "delay_ratio": 1.136539
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.6707035611184307,
+      "link_mbps": 6.707035611184306,
+      "status": "ok",
+      "normalized_score_raw": -2.4180886,
+      "normalized_score_per_sender": -1.2090443,
+      "senders": [
+        {
+          "throughput_ratio": 0.493476,
+          "delay_ratio": 1.12911
+        },
+        {
+          "throughput_ratio": 0.500427,
+          "delay_ratio": 1.132605
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.7196856730011519,
+      "link_mbps": 7.196856730011519,
+      "status": "ok",
+      "normalized_score_raw": -2.4419440000000003,
+      "normalized_score_per_sender": -1.2209720000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.473767,
+          "delay_ratio": 1.113183
+        },
+        {
+          "throughput_ratio": 0.443021,
+          "delay_ratio": 1.120466
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.7722449945836258,
+      "link_mbps": 7.722449945836258,
+      "status": "ok",
+      "normalized_score_raw": -2.4082318999999996,
+      "normalized_score_per_sender": -1.2041159499999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.47077,
+          "delay_ratio": 1.110482
+        },
+        {
+          "throughput_ratio": 0.495031,
+          "delay_ratio": 1.112776
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.8286427728546845,
+      "link_mbps": 8.286427728546844,
+      "status": "ok",
+      "normalized_score_raw": -2.4718687999999998,
+      "normalized_score_per_sender": -1.2359343999999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.482776,
+          "delay_ratio": 1.111229
+        },
+        {
+          "throughput_ratio": 0.45605,
+          "delay_ratio": 1.1058
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.8891593339164642,
+      "link_mbps": 8.891593339164642,
+      "status": "ok",
+      "normalized_score_raw": -2.4750534,
+      "normalized_score_per_sender": -1.2375267,
+      "senders": [
+        {
+          "throughput_ratio": 0.477383,
+          "delay_ratio": 1.101802
+        },
+        {
+          "throughput_ratio": 0.481866,
+          "delay_ratio": 1.104351
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 0.9540954763499938,
+      "link_mbps": 9.540954763499938,
+      "status": "ok",
+      "normalized_score_raw": -2.5291348,
+      "normalized_score_per_sender": -1.2645674,
+      "senders": [
+        {
+          "throughput_ratio": 0.434286,
+          "delay_ratio": 1.085474
+        },
+        {
+          "throughput_ratio": 0.475043,
+          "delay_ratio": 1.087054
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.023773966339585,
+      "link_mbps": 10.23773966339585,
+      "status": "ok",
+      "normalized_score_raw": -2.6077968999999994,
+      "normalized_score_per_sender": -1.3038984499999997,
+      "senders": [
+        {
+          "throughput_ratio": 0.446684,
+          "delay_ratio": 1.079054
+        },
+        {
+          "throughput_ratio": 0.458592,
+          "delay_ratio": 1.071226
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.0985411419875584,
+      "link_mbps": 10.985411419875584,
+      "status": "ok",
+      "normalized_score_raw": -2.7269824,
+      "normalized_score_per_sender": -1.3634912,
+      "senders": [
+        {
+          "throughput_ratio": 0.410883,
+          "delay_ratio": 1.053799
+        },
+        {
+          "throughput_ratio": 0.4023,
+          "delay_ratio": 1.050001
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.1787686347935875,
+      "link_mbps": 11.787686347935875,
+      "status": "ok",
+      "normalized_score_raw": -2.7375949,
+      "normalized_score_per_sender": -1.36879745,
+      "senders": [
+        {
+          "throughput_ratio": 0.408112,
+          "delay_ratio": 1.070773
+        },
+        {
+          "throughput_ratio": 0.437262,
+          "delay_ratio": 1.058925
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.2648552168552962,
+      "link_mbps": 12.648552168552962,
+      "status": "ok",
+      "normalized_score_raw": -2.9394416000000003,
+      "normalized_score_per_sender": -1.4697208000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.369186,
+          "delay_ratio": 1.044417
+        },
+        {
+          "throughput_ratio": 0.391049,
+          "delay_ratio": 1.048286
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.3572287829716534,
+      "link_mbps": 13.572287829716533,
+      "status": "ok",
+      "normalized_score_raw": -3.0489384000000004,
+      "normalized_score_per_sender": -1.5244692000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.350767,
+          "delay_ratio": 1.029284
+        },
+        {
+          "throughput_ratio": 0.336691,
+          "delay_ratio": 1.032133
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.4563484775012439,
+      "link_mbps": 14.563484775012439,
+      "status": "ok",
+      "normalized_score_raw": -3.1452658,
+      "normalized_score_per_sender": -1.5726329,
+      "senders": [
+        {
+          "throughput_ratio": 0.371283,
+          "delay_ratio": 1.044231
+        },
+        {
+          "throughput_ratio": 0.351719,
+          "delay_ratio": 1.040502
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.5627069765469954,
+      "link_mbps": 15.627069765469955,
+      "status": "ok",
+      "normalized_score_raw": -3.252002,
+      "normalized_score_per_sender": -1.626001,
+      "senders": [
+        {
+          "throughput_ratio": 0.349043,
+          "delay_ratio": 1.030502
+        },
+        {
+          "throughput_ratio": 0.36476,
+          "delay_ratio": 1.039875
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.6768329368110084,
+      "link_mbps": 16.768329368110084,
+      "status": "ok",
+      "normalized_score_raw": -3.4263234000000002,
+      "normalized_score_per_sender": -1.7131617000000001,
+      "senders": [
+        {
+          "throughput_ratio": 0.312942,
+          "delay_ratio": 1.027848
+        },
+        {
+          "throughput_ratio": 0.309771,
+          "delay_ratio": 1.027994
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.799293623291553,
+      "link_mbps": 17.992936232915532,
+      "status": "ok",
+      "normalized_score_raw": -3.560015,
+      "normalized_score_per_sender": -1.7800075,
+      "senders": [
+        {
+          "throughput_ratio": 0.288585,
+          "delay_ratio": 1.019958
+        },
+        {
+          "throughput_ratio": 0.305682,
+          "delay_ratio": 1.034169
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 1.93069772888325,
+      "link_mbps": 19.3069772888325,
+      "status": "ok",
+      "normalized_score_raw": -3.7520973,
+      "normalized_score_per_sender": -1.87604865,
+      "senders": [
+        {
+          "throughput_ratio": 0.294788,
+          "delay_ratio": 1.033819
+        },
+        {
+          "throughput_ratio": 0.27532,
+          "delay_ratio": 1.030043
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 2.0716983998953076,
+      "link_mbps": 20.716983998953076,
+      "status": "ok",
+      "normalized_score_raw": -3.9282809999999997,
+      "normalized_score_per_sender": -1.9641404999999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.268252,
+          "delay_ratio": 1.016549
+        },
+        {
+          "throughput_ratio": 0.23452,
+          "delay_ratio": 1.009533
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 2.2229964825261948,
+      "link_mbps": 22.22996482526195,
+      "status": "ok",
+      "normalized_score_raw": -4.104495700000001,
+      "normalized_score_per_sender": -2.0522478500000005,
+      "senders": [
+        {
+          "throughput_ratio": 0.255511,
+          "delay_ratio": 1.02475
+        },
+        {
+          "throughput_ratio": 0.267708,
+          "delay_ratio": 1.022833
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 2.38534400643142,
+      "link_mbps": 23.853440064314203,
+      "status": "ok",
+      "normalized_score_raw": -4.3383702,
+      "normalized_score_per_sender": -2.1691851,
+      "senders": [
+        {
+          "throughput_ratio": 0.223659,
+          "delay_ratio": 1.010349
+        },
+        {
+          "throughput_ratio": 0.223528,
+          "delay_ratio": 1.006193
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 2.5595479226995366,
+      "link_mbps": 25.595479226995366,
+      "status": "ok",
+      "normalized_score_raw": -4.5350735,
+      "normalized_score_per_sender": -2.26753675,
+      "senders": [
+        {
+          "throughput_ratio": 0.233485,
+          "delay_ratio": 1.018357
+        },
+        {
+          "throughput_ratio": 0.208821,
+          "delay_ratio": 1.008869
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 2.746474114816052,
+      "link_mbps": 27.46474114816052,
+      "status": "ok",
+      "normalized_score_raw": -4.6548903,
+      "normalized_score_per_sender": -2.32744515,
+      "senders": [
+        {
+          "throughput_ratio": 0.209587,
+          "delay_ratio": 1.014969
+        },
+        {
+          "throughput_ratio": 0.198724,
+          "delay_ratio": 1.010045
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 2.9470517025518106,
+      "link_mbps": 29.470517025518106,
+      "status": "ok",
+      "normalized_score_raw": -4.941272400000001,
+      "normalized_score_per_sender": -2.4706362000000004,
+      "senders": [
+        {
+          "throughput_ratio": 0.19645,
+          "delay_ratio": 1.020168
+        },
+        {
+          "throughput_ratio": 0.18702,
+          "delay_ratio": 1.016569
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 3.1622776601683795,
+      "link_mbps": 31.622776601683796,
+      "status": "ok",
+      "normalized_score_raw": -5.0697980000000005,
+      "normalized_score_per_sender": -2.5348990000000002,
+      "senders": [
+        {
+          "throughput_ratio": 0.19376,
+          "delay_ratio": 1.01303
+        },
+        {
+          "throughput_ratio": 0.156947,
+          "delay_ratio": 1.002268
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 3.393221771895329,
+      "link_mbps": 33.93221771895329,
+      "status": "ok",
+      "normalized_score_raw": -5.2033936,
+      "normalized_score_per_sender": -2.6016968,
+      "senders": [
+        {
+          "throughput_ratio": 0.145799,
+          "delay_ratio": 1.00378
+        },
+        {
+          "throughput_ratio": 0.150951,
+          "delay_ratio": 1.003885
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 3.6410319493106758,
+      "link_mbps": 36.410319493106755,
+      "status": "ok",
+      "normalized_score_raw": -5.5035488,
+      "normalized_score_per_sender": -2.7517744,
+      "senders": [
+        {
+          "throughput_ratio": 0.156711,
+          "delay_ratio": 1.012874
+        },
+        {
+          "throughput_ratio": 0.155689,
+          "delay_ratio": 1.002279
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 3.9069399370546183,
+      "link_mbps": 39.06939937054618,
+      "status": "ok",
+      "normalized_score_raw": -5.642740300000001,
+      "normalized_score_per_sender": -2.8213701500000004,
+      "senders": [
+        {
+          "throughput_ratio": 0.148275,
+          "delay_ratio": 1.007586
+        },
+        {
+          "throughput_ratio": 0.152037,
+          "delay_ratio": 1.005419
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 4.192267435236919,
+      "link_mbps": 41.922674352369185,
+      "status": "ok",
+      "normalized_score_raw": -5.771448299999999,
+      "normalized_score_per_sender": -2.8857241499999997,
+      "senders": [
+        {
+          "throughput_ratio": 0.131133,
+          "delay_ratio": 1.002141
+        },
+        {
+          "throughput_ratio": 0.130741,
+          "delay_ratio": 1.006695
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 4.4984326689694445,
+      "link_mbps": 44.98432668969444,
+      "status": "ok",
+      "normalized_score_raw": -6.013688,
+      "normalized_score_per_sender": -3.006844,
+      "senders": [
+        {
+          "throughput_ratio": 0.113499,
+          "delay_ratio": 1.001519
+        },
+        {
+          "throughput_ratio": 0.118259,
+          "delay_ratio": 1.00161
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 4.82695743767787,
+      "link_mbps": 48.2695743767787,
+      "status": "ok",
+      "normalized_score_raw": -6.1742926,
+      "normalized_score_per_sender": -3.0871463,
+      "senders": [
+        {
+          "throughput_ratio": 0.102489,
+          "delay_ratio": 1.001412
+        },
+        {
+          "throughput_ratio": 0.112402,
+          "delay_ratio": 1.001452
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 5.17947467923121,
+      "link_mbps": 51.7947467923121,
+      "status": "ok",
+      "normalized_score_raw": -6.5263013,
+      "normalized_score_per_sender": -3.26315065,
+      "senders": [
+        {
+          "throughput_ratio": 0.112854,
+          "delay_ratio": 1.001344
+        },
+        {
+          "throughput_ratio": 0.108252,
+          "delay_ratio": 1.003141
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 5.557736586486877,
+      "link_mbps": 55.57736586486877,
+      "status": "ok",
+      "normalized_score_raw": -6.7172944999999995,
+      "normalized_score_per_sender": -3.3586472499999998,
+      "senders": [
+        {
+          "throughput_ratio": 0.0955,
+          "delay_ratio": 1.001217
+        },
+        {
+          "throughput_ratio": 0.089178,
+          "delay_ratio": 1.001218
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 5.963623316594643,
+      "link_mbps": 59.63623316594643,
+      "status": "ok",
+      "normalized_score_raw": -6.845587900000001,
+      "normalized_score_per_sender": -3.4227939500000004,
+      "senders": [
+        {
+          "throughput_ratio": 0.085131,
+          "delay_ratio": 1.001148
+        },
+        {
+          "throughput_ratio": 0.092501,
+          "delay_ratio": 1.001145
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 6.399152336349265,
+      "link_mbps": 63.99152336349265,
+      "status": "ok",
+      "normalized_score_raw": -7.013275300000001,
+      "normalized_score_per_sender": -3.5066376500000005,
+      "senders": [
+        {
+          "throughput_ratio": 0.082815,
+          "delay_ratio": 1.001062
+        },
+        {
+          "throughput_ratio": 0.095025,
+          "delay_ratio": 1.001058
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 6.866488450043002,
+      "link_mbps": 68.66488450043002,
+      "status": "ok",
+      "normalized_score_raw": -7.1826216,
+      "normalized_score_per_sender": -3.5913108,
+      "senders": [
+        {
+          "throughput_ratio": 0.075853,
+          "delay_ratio": 1.000988
+        },
+        {
+          "throughput_ratio": 0.086276,
+          "delay_ratio": 1.000984
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 7.367954559661631,
+      "link_mbps": 73.67954559661631,
+      "status": "ok",
+      "normalized_score_raw": -7.4805364,
+      "normalized_score_per_sender": -3.7402682,
+      "senders": [
+        {
+          "throughput_ratio": 0.072307,
+          "delay_ratio": 1.00092
+        },
+        {
+          "throughput_ratio": 0.07368,
+          "delay_ratio": 1.000919
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 7.9060432109077015,
+      "link_mbps": 79.06043210907701,
+      "status": "ok",
+      "normalized_score_raw": -7.642275000000001,
+      "normalized_score_per_sender": -3.8211375000000003,
+      "senders": [
+        {
+          "throughput_ratio": 0.074559,
+          "delay_ratio": 1.000853
+        },
+        {
+          "throughput_ratio": 0.064634,
+          "delay_ratio": 1.000855
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 8.483428982440724,
+      "link_mbps": 84.83428982440725,
+      "status": "ok",
+      "normalized_score_raw": -7.7989052999999995,
+      "normalized_score_per_sender": -3.8994526499999997,
+      "senders": [
+        {
+          "throughput_ratio": 0.05583,
+          "delay_ratio": 1.000794
+        },
+        {
+          "throughput_ratio": 0.064537,
+          "delay_ratio": 1.000793
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 9.102981779915217,
+      "link_mbps": 91.02981779915217,
+      "status": "ok",
+      "normalized_score_raw": -8.151266900000001,
+      "normalized_score_per_sender": -4.075633450000001,
+      "senders": [
+        {
+          "throughput_ratio": 0.063039,
+          "delay_ratio": 1.000743
+        },
+        {
+          "throughput_ratio": 0.065976,
+          "delay_ratio": 1.001152
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 9.767781100894888,
+      "link_mbps": 97.67781100894888,
+      "status": "ok",
+      "normalized_score_raw": -8.231968,
+      "normalized_score_per_sender": -4.115984,
+      "senders": [
+        {
+          "throughput_ratio": 0.060664,
+          "delay_ratio": 1.000689
+        },
+        {
+          "throughput_ratio": 0.057564,
+          "delay_ratio": 1.000689
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 10.481131341546856,
+      "link_mbps": 104.81131341546856,
+      "status": "ok",
+      "normalized_score_raw": -8.403920999999999,
+      "normalized_score_per_sender": -4.201960499999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.053872,
+          "delay_ratio": 1.000643
+        },
+        {
+          "throughput_ratio": 0.052947,
+          "delay_ratio": 1.000642
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 11.246578221198197,
+      "link_mbps": 112.46578221198197,
+      "status": "ok",
+      "normalized_score_raw": -8.6519195,
+      "normalized_score_per_sender": -4.32595975,
+      "senders": [
+        {
+          "throughput_ratio": 0.05139,
+          "delay_ratio": 1.000598
+        },
+        {
+          "throughput_ratio": 0.051495,
+          "delay_ratio": 1.000598
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 12.067926406393287,
+      "link_mbps": 120.67926406393286,
+      "status": "ok",
+      "normalized_score_raw": -8.8227444,
+      "normalized_score_per_sender": -4.4113722,
+      "senders": [
+        {
+          "throughput_ratio": 0.046406,
+          "delay_ratio": 1.00056
+        },
+        {
+          "throughput_ratio": 0.058049,
+          "delay_ratio": 1.005785
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 12.949258422052626,
+      "link_mbps": 129.49258422052625,
+      "status": "ok",
+      "normalized_score_raw": -9.0071835,
+      "normalized_score_per_sender": -4.50359175,
+      "senders": [
+        {
+          "throughput_ratio": 0.051039,
+          "delay_ratio": 1.000518
+        },
+        {
+          "throughput_ratio": 0.03949,
+          "delay_ratio": 1.000519
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 13.894954943731378,
+      "link_mbps": 138.94954943731378,
+      "status": "ok",
+      "normalized_score_raw": -9.3264544,
+      "normalized_score_per_sender": -4.6632272,
+      "senders": [
+        {
+          "throughput_ratio": 0.048039,
+          "delay_ratio": 1.000485
+        },
+        {
+          "throughput_ratio": 0.037483,
+          "delay_ratio": 1.000485
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 14.909716571840645,
+      "link_mbps": 149.09716571840644,
+      "status": "ok",
+      "normalized_score_raw": -9.4460284,
+      "normalized_score_per_sender": -4.7230142,
+      "senders": [
+        {
+          "throughput_ratio": 0.040419,
+          "delay_ratio": 1.00045
+        },
+        {
+          "throughput_ratio": 0.036763,
+          "delay_ratio": 1.000451
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 15.998587196060587,
+      "link_mbps": 159.98587196060586,
+      "status": "ok",
+      "normalized_score_raw": -9.591522800000002,
+      "normalized_score_per_sender": -4.795761400000001,
+      "senders": [
+        {
+          "throughput_ratio": 0.036923,
+          "delay_ratio": 1.000419
+        },
+        {
+          "throughput_ratio": 0.03121,
+          "delay_ratio": 1.000419
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 17.16697906607861,
+      "link_mbps": 171.6697906607861,
+      "status": "ok",
+      "normalized_score_raw": -9.8694553,
+      "normalized_score_per_sender": -4.93472765,
+      "senders": [
+        {
+          "throughput_ratio": 0.029723,
+          "delay_ratio": 1.000391
+        },
+        {
+          "throughput_ratio": 0.032558,
+          "delay_ratio": 1.000391
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 18.420699693267153,
+      "link_mbps": 184.20699693267153,
+      "status": "ok",
+      "normalized_score_raw": -10.0584215,
+      "normalized_score_per_sender": -5.02921075,
+      "senders": [
+        {
+          "throughput_ratio": 0.031975,
+          "delay_ratio": 1.000364
+        },
+        {
+          "throughput_ratio": 0.031639,
+          "delay_ratio": 1.000364
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 19.765980717016333,
+      "link_mbps": 197.65980717016333,
+      "status": "ok",
+      "normalized_score_raw": -10.2472321,
+      "normalized_score_per_sender": -5.12361605,
+      "senders": [
+        {
+          "throughput_ratio": 0.028384,
+          "delay_ratio": 1.000339
+        },
+        {
+          "throughput_ratio": 0.029919,
+          "delay_ratio": 1.000339
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 21.209508879201906,
+      "link_mbps": 212.09508879201906,
+      "status": "ok",
+      "normalized_score_raw": -10.463871699999999,
+      "normalized_score_per_sender": -5.231935849999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.023905,
+          "delay_ratio": 1.000316
+        },
+        {
+          "throughput_ratio": 0.026623,
+          "delay_ratio": 1.000316
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 22.758459260747884,
+      "link_mbps": 227.58459260747884,
+      "status": "ok",
+      "normalized_score_raw": -10.609427700000001,
+      "normalized_score_per_sender": -5.304713850000001,
+      "senders": [
+        {
+          "throughput_ratio": 0.028928,
+          "delay_ratio": 1.000294
+        },
+        {
+          "throughput_ratio": 0.022254,
+          "delay_ratio": 1.000294
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 24.42053094548651,
+      "link_mbps": 244.20530945486513,
+      "status": "ok",
+      "normalized_score_raw": -10.811099,
+      "normalized_score_per_sender": -5.4055495,
+      "senders": [
+        {
+          "throughput_ratio": 0.022148,
+          "delay_ratio": 1.000274
+        },
+        {
+          "throughput_ratio": 0.020738,
+          "delay_ratio": 1.000274
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 26.203985288583496,
+      "link_mbps": 262.039852885835,
+      "status": "ok",
+      "normalized_score_raw": -11.0052368,
+      "normalized_score_per_sender": -5.5026184,
+      "senders": [
+        {
+          "throughput_ratio": 0.025965,
+          "delay_ratio": 1.000255
+        },
+        {
+          "throughput_ratio": 0.020326,
+          "delay_ratio": 1.000256
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 28.11768697974231,
+      "link_mbps": 281.1768697974231,
+      "status": "ok",
+      "normalized_score_raw": -11.078078699999999,
+      "normalized_score_per_sender": -5.5390393499999995,
+      "senders": [
+        {
+          "throughput_ratio": 0.02079,
+          "delay_ratio": 1.000238
+        },
+        {
+          "throughput_ratio": 0.019018,
+          "delay_ratio": 1.000238
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 30.171148105292946,
+      "link_mbps": 301.71148105292946,
+      "status": "ok",
+      "normalized_score_raw": -11.435977699999999,
+      "normalized_score_per_sender": -5.717988849999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.019642,
+          "delay_ratio": 1.000222
+        },
+        {
+          "throughput_ratio": 0.02066,
+          "delay_ratio": 1.000222
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 32.37457542817645,
+      "link_mbps": 323.7457542817645,
+      "status": "ok",
+      "normalized_score_raw": -11.6550706,
+      "normalized_score_per_sender": -5.8275353,
+      "senders": [
+        {
+          "throughput_ratio": 0.01766,
+          "delay_ratio": 1.000206
+        },
+        {
+          "throughput_ratio": 0.018014,
+          "delay_ratio": 1.000207
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 34.738921120831165,
+      "link_mbps": 347.3892112083116,
+      "status": "ok",
+      "normalized_score_raw": -11.8411782,
+      "normalized_score_per_sender": -5.9205891,
+      "senders": [
+        {
+          "throughput_ratio": 0.017266,
+          "delay_ratio": 1.000192
+        },
+        {
+          "throughput_ratio": 0.014868,
+          "delay_ratio": 1.000193
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 37.27593720314939,
+      "link_mbps": 372.7593720314939,
+      "status": "ok",
+      "normalized_score_raw": -12.1786464,
+      "normalized_score_per_sender": -6.0893232,
+      "senders": [
+        {
+          "throughput_ratio": 0.015591,
+          "delay_ratio": 1.000179
+        },
+        {
+          "throughput_ratio": 0.014018,
+          "delay_ratio": 1.000179
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 39.99823395608934,
+      "link_mbps": 399.98233956089337,
+      "status": "ok",
+      "normalized_score_raw": -12.1946573,
+      "normalized_score_per_sender": -6.09732865,
+      "senders": [
+        {
+          "throughput_ratio": 0.014103,
+          "delay_ratio": 1.000167
+        },
+        {
+          "throughput_ratio": 0.015047,
+          "delay_ratio": 1.000167
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 42.919342601287774,
+      "link_mbps": 429.19342601287775,
+      "status": "ok",
+      "normalized_score_raw": -12.5467324,
+      "normalized_score_per_sender": -6.2733662,
+      "senders": [
+        {
+          "throughput_ratio": 0.014638,
+          "delay_ratio": 1.000156
+        },
+        {
+          "throughput_ratio": 0.012822,
+          "delay_ratio": 1.000156
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 46.05378255822415,
+      "link_mbps": 460.5378255822415,
+      "status": "ok",
+      "normalized_score_raw": -12.770097599999998,
+      "normalized_score_per_sender": -6.385048799999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.011838,
+          "delay_ratio": 1.000145
+        },
+        {
+          "throughput_ratio": 0.011932,
+          "delay_ratio": 1.000145
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 49.41713361323835,
+      "link_mbps": 494.1713361323835,
+      "status": "ok",
+      "normalized_score_raw": -12.8367702,
+      "normalized_score_per_sender": -6.4183851,
+      "senders": [
+        {
+          "throughput_ratio": 0.011433,
+          "delay_ratio": 1.000135
+        },
+        {
+          "throughput_ratio": 0.011612,
+          "delay_ratio": 1.000135
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 53.026113359119876,
+      "link_mbps": 530.2611335911988,
+      "status": "ok",
+      "normalized_score_raw": -13.026408499999999,
+      "normalized_score_per_sender": -6.513204249999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.011513,
+          "delay_ratio": 1.000126
+        },
+        {
+          "throughput_ratio": 0.01165,
+          "delay_ratio": 1.000126
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 56.89866029018298,
+      "link_mbps": 568.9866029018298,
+      "status": "ok",
+      "normalized_score_raw": -13.3370442,
+      "normalized_score_per_sender": -6.6685221,
+      "senders": [
+        {
+          "throughput_ratio": 0.009947,
+          "delay_ratio": 1.000117
+        },
+        {
+          "throughput_ratio": 0.011155,
+          "delay_ratio": 1.000117
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 61.05402296585331,
+      "link_mbps": 610.540229658533,
+      "status": "ok",
+      "normalized_score_raw": -13.518096600000002,
+      "normalized_score_per_sender": -6.759048300000001,
+      "senders": [
+        {
+          "throughput_ratio": 0.009463,
+          "delay_ratio": 1.000109
+        },
+        {
+          "throughput_ratio": 0.008245,
+          "delay_ratio": 1.000109
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 65.5128556859551,
+      "link_mbps": 655.128556859551,
+      "status": "ok",
+      "normalized_score_raw": -13.590638899999998,
+      "normalized_score_per_sender": -6.795319449999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.008262,
+          "delay_ratio": 1.000102
+        },
+        {
+          "throughput_ratio": 0.009016,
+          "delay_ratio": 1.000102
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 70.29732115325476,
+      "link_mbps": 702.9732115325476,
+      "status": "ok",
+      "normalized_score_raw": -13.9222521,
+      "normalized_score_per_sender": -6.96112605,
+      "senders": [
+        {
+          "throughput_ratio": 0.00686,
+          "delay_ratio": 1.000095
+        },
+        {
+          "throughput_ratio": 0.00911,
+          "delay_ratio": 1.000095
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 75.43120063354615,
+      "link_mbps": 754.3120063354615,
+      "status": "ok",
+      "normalized_score_raw": -14.108496299999999,
+      "normalized_score_per_sender": -7.054248149999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.007998,
+          "delay_ratio": 1.000088
+        },
+        {
+          "throughput_ratio": 0.007612,
+          "delay_ratio": 1.000088
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 80.94001216083123,
+      "link_mbps": 809.4001216083122,
+      "status": "ok",
+      "normalized_score_raw": -14.344433700000002,
+      "normalized_score_per_sender": -7.172216850000001,
+      "senders": [
+        {
+          "throughput_ratio": 0.007083,
+          "delay_ratio": 1.000083
+        },
+        {
+          "throughput_ratio": 0.0076,
+          "delay_ratio": 1.000082
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 86.85113737513525,
+      "link_mbps": 868.5113737513525,
+      "status": "ok",
+      "normalized_score_raw": -14.479458099999999,
+      "normalized_score_per_sender": -7.239729049999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.006116,
+          "delay_ratio": 1.000077
+        },
+        {
+          "throughput_ratio": 0.007196,
+          "delay_ratio": 1.000077
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 93.19395762340778,
+      "link_mbps": 931.9395762340778,
+      "status": "ok",
+      "normalized_score_raw": -14.7695765,
+      "normalized_score_per_sender": -7.38478825,
+      "senders": [
+        {
+          "throughput_ratio": 0.006143,
+          "delay_ratio": 1.000072
+        },
+        {
+          "throughput_ratio": 0.005862,
+          "delay_ratio": 1.000072
+        }
+      ],
+      "error": null
+    },
+    {
+      "link_ppt": 100.0,
+      "link_mbps": 1000.0,
+      "status": "ok",
+      "normalized_score_raw": -14.895003499999998,
+      "normalized_score_per_sender": -7.447501749999999,
+      "senders": [
+        {
+          "throughput_ratio": 0.00571,
+          "delay_ratio": 1.000067
+        },
+        {
+          "throughput_ratio": 0.00713,
+          "delay_ratio": 1.000067
+        }
+      ],
+      "error": null
+    }
+  ]
+}

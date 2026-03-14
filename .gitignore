@@ -1,0 +1,28 @@
+# Build artifacts
+*.o
+*.a
+*.pyc
+__pycache__/
+sender-runner
+evolved-runner
+rattrainer
+
+# Generated protobufs
+*.pb.cc
+*.pb.h
+
+# LaTeX build
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.pdf
+
+# Editor / OS
+.DS_Store
+*.swp
+.env
